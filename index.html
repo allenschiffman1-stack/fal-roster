@@ -1,0 +1,2448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Gaming Legends | 3D Character Showcase</title>
+<link rel="icon" type="image/svg+xml" href="./assets/favicon.svg"/>
+<link rel="apple-touch-icon" href="./assets/favicon.svg"/>
+<meta property="og:title" content="Gaming Legends | 3D Character Showcase"/>
+<meta property="og:description" content="12 iconic video-game protagonists rendered in 3D. Built by Allen Schiffman, powered by fal.ai × Claude."/>
+<meta property="og:image" content="./assets/fal-icon.svg"/>
+<meta name="theme-color" content="#0c4a6e"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&family=Chivo+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Custom fal fonts (matched to fal.ai/careers) */
+  @font-face{font-family:focal;src:url('./assets/fonts/focal-300.woff2') format('woff2');font-display:swap;font-weight:300;font-style:normal}
+  @font-face{font-family:focal;src:url('./assets/fonts/focal-400.woff2') format('woff2');font-display:swap;font-weight:400;font-style:normal}
+  @font-face{font-family:focal;src:url('./assets/fonts/focal-500.woff2') format('woff2');font-display:swap;font-weight:500;font-style:normal}
+  @font-face{font-family:focal;src:url('./assets/fonts/focal-600.woff2') format('woff2');font-display:swap;font-weight:600;font-style:normal}
+  @font-face{font-family:hal;src:url('./assets/fonts/hal-400.woff2') format('woff2');font-display:swap;font-weight:400;font-style:normal}
+  :root{
+    --c1:#0c4a6e;
+    --c2:#7dd3fc;
+    --c3:#475569;
+    --blue:var(--c1);
+    --blue-2:var(--c2);
+    --blue-3:var(--c2);
+    --blue-4:var(--c2);
+    --blue-deep:var(--c1);
+    --ink:var(--c3);
+    --ink-2:#0c4a6e;
+    --muted:var(--c3);
+    --line:rgba(15,23,42,.08);
+    --line-2:rgba(15,23,42,.05);
+  }
+  html,body{background:transparent;color:var(--ink);font-family:'Public Sans',ui-sans-serif,system-ui,sans-serif;font-weight:400;letter-spacing:.01em}
+  .mono{font-family:'Chivo Mono',monospace;letter-spacing:.04em}
+  .display{font-family:'focal','Public Sans',sans-serif;font-weight:300;letter-spacing:-.02em}
+  .panel{background:rgba(255,255,255,.28);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 8px 30px rgba(56,189,248,.06)}
+  .panel-clear{background:transparent !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:none !important;box-shadow:none !important}
+  .hair{border:1px solid var(--line)}
+  .hair-2{border:1px solid var(--line-2)}
+  .chip{border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-family:'Chivo Mono',monospace;font-size:10px;color:#4b5563;background:#fff}
+  .grad-rose{background:linear-gradient(135deg,var(--c2) 0%,var(--c1) 60%,var(--c1) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .bar{height:6px;border-radius:999px;background:var(--c2);overflow:hidden;position:relative}
+  .bar > i{display:block;height:100%;border-radius:999px}
+  .bar-pink > i{background:linear-gradient(90deg,var(--c2),var(--c1))}
+  .bar-blue > i{background:linear-gradient(90deg,var(--c2),var(--c1))}
+  .bar-purple > i{background:linear-gradient(90deg,var(--c2),var(--c1))}
+  .bar-cyan > i{background:linear-gradient(90deg,var(--c2),var(--c1))}
+  .tick{letter-spacing:.16em;font-family:'Chivo Mono',monospace;font-size:9.5px;color:#9ca3af;text-transform:uppercase}
+  .slot{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line-2);border-radius:12px;background:#fff;transition:all .18s ease;cursor:pointer}
+  .slot:hover{border-color:var(--c2);box-shadow:0 0 0 3px rgba(56,189,248,.08)}
+  .slot.active{border:1px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--c2),var(--c1)) border-box;box-shadow:0 6px 18px rgba(56,189,248,.12)}
+  .slot .icon{width:28px;height:28px;border-radius:8px;background:var(--c2);display:flex;align-items:center;justify-content:center;color:var(--c1);flex:none}
+  .slot .qty{margin-left:auto;color:#059669;font-family:'Chivo Mono',monospace;font-size:13px;font-weight:500}
+  .slot .art{margin-left:auto;width:82px;height:38px;border-radius:8px;background:linear-gradient(135deg,var(--c2),var(--c2));display:flex;align-items:center;justify-content:center}
+  .char{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid rgba(255,255,255,.35);border-radius:14px;background:rgba(255,255,255,.20);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);cursor:pointer;transition:all .18s;min-width:0;overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.45) inset, 0 4px 12px rgba(56,189,248,.05)}.char .text-right{flex-shrink:0}.char .lv,.char .tier{white-space:nowrap}
+  .char .flex-1{min-width:0;overflow:hidden}
+  .char .flex-1 .text-\[13px\]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .char .flex-1 .mono{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;line-height:1.3}
+  .char:hover{border-color:var(--c2);box-shadow:0 0 0 3px rgba(56,189,248,.06)}
+  .char.active{border:1px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--c2),var(--c1) 70%,var(--c1)) border-box;box-shadow:0 8px 22px rgba(56,189,248,.18)}
+  .tier{font-family:'Chivo Mono',monospace;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--line)}
+  .tier.S{color:var(--c1);background:var(--c2);border-color:var(--c2)}
+  .tier.A{color:var(--c1);background:var(--c2);border-color:var(--c2)}
+  .tier.B{color:var(--c3);background:#f8fafc;border-color:#e2e8f0}
+  .lv{font-family:'Chivo Mono',monospace;font-size:11px;color:#6b7280}
+  .badge-current{font-family:'Chivo Mono',monospace;font-size:9.5px;padding:3px 8px;border-radius:6px;background:linear-gradient(135deg,var(--c2),var(--c2));color:var(--c1);border:1px solid var(--c2)}
+  /* Each bg video is enlarged ~10% so we have room to parallax-shift it as the camera orbits */
+  .bgvid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;transition:opacity .9s ease;transform:scale(1.4);transform-origin:center;will-change:transform}.bgvid-on{opacity:1}.bgvid-off{opacity:0}
+  /* Canvas — no default border / outline that some browsers add */
+  #scene3d{outline:none;border:0;display:block}
+  /* Empty panel surfaces let mouse-drag pass through to the 3D scene; only interactive
+     children (cards, buttons, inputs, links) capture the click. */
+  .panel{pointer-events:none}
+  .panel button, .panel a, .panel input, .panel select, .panel .char, .panel .role-card,
+  .panel .tab, .panel summary, .panel textarea{pointer-events:auto}
+  .bgfade{position:fixed;inset:0;background:linear-gradient(180deg,rgba(224,242,254,.30) 0%,rgba(186,230,253,.30) 60%,rgba(255,255,255,.35) 100%);z-index:1;pointer-events:none}
+  body > div{position:relative;z-index:2}
+  .tab{font-family:'Chivo Mono',monospace;font-size:10.5px;padding:6px 12px;border-radius:8px;color:var(--c3);border:1px solid transparent;cursor:pointer}
+  .tab.on{background:linear-gradient(135deg,var(--c2),var(--c2));color:var(--c1);border-color:var(--c2)}
+  .ico{width:18px;height:18px;stroke:var(--c1);fill:none;stroke-width:1.6}
+  .qh{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .qh .qi{width:30px;height:30px;border-radius:8px;background:var(--c2);display:flex;align-items:center;justify-content:center;color:var(--c1)}
+  .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+  .btn-roster{background:linear-gradient(135deg,var(--c2),var(--c1) 60%,var(--c1));color:#fff;font-family:'Chivo Mono',monospace;font-size:11px;letter-spacing:.14em;padding:10px 16px;border-radius:10px;box-shadow:0 8px 20px rgba(56,189,248,.32)}
+  model-viewer{width:100%;height:100%;--poster-color:transparent;background:transparent}
+  .ring{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .ring svg{width:60%;height:60%;opacity:.22}
+  .scroll-thin::-webkit-scrollbar-thumb{background:var(--c2) !important}
+  .fal-diamond{background:linear-gradient(135deg,var(--c1),var(--c1)) !important}
+  .floor-anchor{--floor-w:340px;--floor-h:120px;width:0;height:0;pointer-events:none}
+  .floor-anchor::after{content:"";position:absolute;left:calc(var(--floor-w) * -0.5);top:calc(var(--floor-h) * -0.5);width:var(--floor-w);height:var(--floor-h);background-image:url('./assets/floor-marble.png');background-size:cover;background-position:center;transform-origin:50% 50%;transform:rotateX(70deg);border-radius:50%;box-shadow:0 0 60px rgba(56,189,248,.25);mask-image:radial-gradient(ellipse at center,#000 38%,rgba(0,0,0,.6) 65%,transparent 92%);-webkit-mask-image:radial-gradient(ellipse at center,#000 38%,rgba(0,0,0,.6) 65%,transparent 92%)}
+  .scroll-thin::-webkit-scrollbar{width:4px}
+  .scroll-thin::-webkit-scrollbar-thumb{background:var(--c2);border-radius:4px}
+  .fal-diamond{width:26px;height:26px;background:linear-gradient(135deg,var(--c1),var(--c1));border-radius:7px;position:relative}
+  .fal-diamond:before{content:"";position:absolute;inset:6px;background:#fff;border-radius:3px;transform:rotate(45deg)}
+  /* Tabular numerals — keep digits aligned when stats swap */
+  #lvText,#hpText,#cyberText{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+  /* Subtle ambient animations to feel alive */
+  @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.25);opacity:.7} }
+  @keyframes pulse-soft { 0%,100%{opacity:.92} 50%{opacity:1} }
+  .dot{animation:pulse-dot 2.4s ease-in-out infinite}
+  .role-card:hover .role-apply{animation:pulse-soft 1.4s ease-in-out infinite}
+  /* Bar fill — transitions ONLY when its width value actually changes (no idle animation) */
+  .bar{position:relative;overflow:hidden}
+  .bar > i{transition:width 1.1s cubic-bezier(.32,.72,.24,1), background 1.1s ease;position:relative}
+  .bottom-notice{min-width:300px;max-width:460px;text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;line-height:1.4;color:var(--c1);text-shadow:0 1px 4px rgba(255,255,255,.65)}
+  .bottom-notice > div:first-child{text-transform:uppercase}
+  .bottom-notice a{color:var(--c1);text-decoration:underline;text-underline-offset:2px;font-weight:600;pointer-events:auto}
+  /* Mini-map ambient animation — slow & organic, each line on its own timing */
+  @keyframes ants { to { stroke-dashoffset: -32; } }
+  @keyframes gps-pulse {
+    0%,100%{ r:3;   opacity:1   }
+    50%    { r:5.2; opacity:.55 }
+  }
+  @keyframes gps-halo {
+    0%   { r:3; opacity:.5 }
+    100% { r:13; opacity:0  }
+  }
+  @keyframes gps-drift {
+    0%,100% { transform: translate(0,0) }
+    33%     { transform: translate(2.4px,-1.6px) }
+    66%     { transform: translate(-2px,2px) }
+  }
+  @keyframes terrain-a {
+    0%,100% { transform: translateX(0) }
+    50%     { transform: translateX(-4px) }
+  }
+  @keyframes terrain-b {
+    0%,100% { transform: translateX(0) }
+    50%     { transform: translateX(-2.5px) }
+  }
+  @keyframes street-bob {
+    0%,100% { transform: translate(0,0) }
+    50%     { transform: translate(-1px,.6px) }
+  }
+  .map-path     { animation: ants 3.2s linear infinite; }
+  .map-marker   { animation: gps-pulse 3s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  .map-halo     { animation: gps-halo 3s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+  .map-target   { animation: gps-drift 7s ease-in-out infinite; transform-box: fill-box; }
+  .map-terrain-a{ animation: terrain-a 11s ease-in-out infinite; transform-box: fill-box; }
+  .map-terrain-b{ animation: terrain-b 14s ease-in-out infinite; transform-box: fill-box; }
+  .map-street-a { animation: street-bob 9s ease-in-out infinite; transform-box: fill-box; }
+  .map-street-b { animation: street-bob 12s ease-in-out infinite; transform-box: fill-box; animation-delay: -3s; }
+  /* Stat numbers — smooth roll-up animation when value changes */
+  @keyframes tick-flip {
+    0%{opacity:0;transform:translateY(8px) scale(.96);filter:blur(2px)}
+    55%{opacity:1;transform:translateY(-1px) scale(1.01);filter:blur(0)}
+    100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+  }
+  .stat-tick{animation:tick-flip .42s cubic-bezier(.32,.72,.24,1) both;display:inline-block}
+  /* Roster portraits — already cropped to face on disk; gentle ambient bob */
+  .char-portrait{object-fit:cover;object-position:center;animation:portrait-bob 7s ease-in-out infinite;transform-origin:center}
+  @keyframes portrait-bob {
+    0%,100% { transform: scale(1) rotate(0deg) }
+    50%     { transform: scale(1.04) rotate(.8deg) }
+  }
+  /* Bottom horizontal roster — vertical card with portrait on top, JOB NAME as main label */
+  #roster.flex .char{flex-direction:column;align-items:center;text-align:center;min-width:128px;max-width:144px;padding:12px 10px;gap:8px;position:relative}
+  #roster.flex .char .char-portrait{width:64px !important;height:64px !important}
+  #roster.flex .char .flex-1{flex:0 0 auto;width:100%;min-width:0}
+  #roster.flex .char .text-right{display:none}
+  #roster.flex .char .badge-current{position:absolute;top:6px;right:6px;font-size:7.5px;padding:1px 5px;line-height:1.4}
+  /* Hide cyber name (FAL-08 / ATLAS-12 etc.) — only the JOB title matters here */
+  #roster.flex .char .text-\[13px\]{display:none}
+  /* Promote the guild/job label to the main text */
+  #roster.flex .char .mono{font-size:10.5px;line-height:1.3;font-weight:500;letter-spacing:.06em;color:var(--c1);white-space:normal}
+  /* Open roles strip — compact so the page fits in viewport */
+  /* Open roles cards — full-width in vertical strip / fixed width if horizontal */
+  #rolesStrip.flex-col .role-card{min-width:0;max-width:none;width:100%}
+  .role-card{flex:0 0 auto;min-width:210px;max-width:240px;background:rgba(255,255,255,.30);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border:1px solid rgba(255,255,255,.40);border-radius:10px;padding:9px 12px;display:flex;flex-direction:column;gap:2px;text-decoration:none;color:inherit;transition:all .2s;position:relative;box-shadow:0 1px 0 rgba(255,255,255,.45) inset, 0 4px 12px rgba(56,189,248,.06)}
+  .role-card:hover{border-color:var(--c1);background:rgba(255,255,255,.7);transform:translateY(-1px);box-shadow:0 8px 22px rgba(56,189,248,.20)}
+  .role-card .role-title{font-family:'focal',sans-serif;font-weight:500;font-size:12px;color:var(--c1);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .role-card .role-loc{font-family:'Chivo Mono',monospace;font-size:9px;color:var(--c3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+  .role-card .role-skills{display:none}
+  .role-card .role-apply{font-family:'Chivo Mono',monospace;font-size:9px;color:var(--c1);letter-spacing:.16em;margin-top:4px;font-weight:500}
+  .role-card:hover .role-apply{color:var(--c1)}
+  /* MOBILE — allow scrolling, stack panels, give 3D canvas a fixed visible area */
+  @media (max-width: 1023px) {
+    /* Hide disclaimer + skill credit on mobile — keep the experience clean */
+    .bottom-notice { display: none !important; }
+  }
+  @media (max-width: 1023px) {
+    html, body { overflow-y: auto !important; height: auto !important; min-height: 100vh; }
+    body > div.max-w-\[1680px\] { height: auto !important; min-height: 100vh; padding-bottom: 24px; }
+    #scene3d { position: fixed; height: 52vh !important; top: 60px !important; inset: auto !important; left:0 !important; right:0 !important; }
+    .panel { backdrop-filter: blur(12px) saturate(140%); }
+    .grid.grid-cols-12 { gap: 12px !important; }
+    /* Reserve space for the fixed 3D scene — panel overlaps the bottom of canvas */
+    .grid.grid-cols-12 > div.lg\:col-span-5 { display: none; }
+    /* On mobile, hide the GAMING LEGENDS left panel entirely — keep things minimal */
+    .grid.grid-cols-12 > div:first-child { display: none; }
+    /* OPERATOR SELECT (3rd grid child) becomes the first visible block — push it just under the canvas */
+    .grid.grid-cols-12 > div:nth-child(3) { margin-top: calc(44vh - 20px); position:relative; z-index:5; }
+    /* Hide setup panel on mobile by default */
+    #setupPanel { display: none !important; }
+    #setupToggle { display: none !important; }
+  }
+  /* Global swap transition — diagonal sweeping lines */
+  #transitionFx{position:fixed;inset:0;z-index:30;pointer-events:none;overflow:hidden;mix-blend-mode:screen;opacity:0}
+  #transitionFx.tfx-on{opacity:1}
+  #transitionFx .tfx-line{position:absolute;left:-110%;width:220%;height:5px;transform:translateX(-100%) skewY(-7deg);filter:blur(1.5px);opacity:0}
+  #transitionFx .tfx-bright{height:2px;filter:blur(.5px)}
+  #transitionFx.tfx-on .tfx-line{animation:tfx-sweep 850ms cubic-bezier(.4,.7,.3,1) forwards}
+  @keyframes tfx-sweep{
+    0%   {transform:translateX(-100%) skewY(-7deg);opacity:0}
+    18%  {opacity:1}
+    100% {transform:translateX(100%) skewY(-7deg);opacity:0}
+  }
+  /* Subtle global flash on swap */
+  #transitionFlash{position:fixed;inset:0;z-index:29;pointer-events:none;background:radial-gradient(circle at 50% 60%,rgba(255,255,255,.18),transparent 60%);opacity:0;transition:opacity .25s}
+  #transitionFlash.tfx-on{opacity:1;transition:opacity .12s}
+  /* LEFT panel — model pills + edge pulse */
+  .model-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:7px;border:1px solid var(--line);background:rgba(255,255,255,.65);font-family:'Chivo Mono',monospace;font-size:9.5px;letter-spacing:.08em;color:var(--c1);font-weight:500}
+  .model-pill .model-dot{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 6px rgba(16,185,129,.7);animation:pulse-dot 2s ease-in-out infinite}
+  .edge-dot{transform-origin:center;transform-box:fill-box}
+  @keyframes edge-pulse{0%,100%{r:3.2;opacity:1}50%{r:4.6;opacity:.6}}
+  .edge-pulse{animation:edge-pulse 2.4s ease-in-out infinite}
+  /* Continuously flowing route trails */
+  @keyframes route-flow { from { stroke-dashoffset:0 } to { stroke-dashoffset:-30 } }
+  .map-path{ animation: route-flow 1.6s linear infinite; }
+  /* Expanding ring around active mega-PoPs */
+  @keyframes ring-expand { 0%{ r:3; opacity:.85 } 100%{ r:13; opacity:0 } }
+  .edge-ring{ animation: ring-expand 3.2s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+</style>
+</head>
+<body class="overflow-x-hidden overflow-y-hidden" style="height:100vh">
+
+<!-- LOADING OVERLAY — very light blue gradient bg, white branding, fades out -->
+<div id="bootLoader" style="position:fixed;inset:0;z-index:200;background:linear-gradient(180deg,#7dd3fc 0%,#bae6fd 50%,#7dd3fc 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity 1.1s ease">
+  <img src="./assets/fal-icon.svg" alt="fal" style="height:64px;width:auto;object-fit:contain;filter:brightness(0) invert(1) drop-shadow(0 2px 18px rgba(56,189,248,.4));transform:skewX(-8deg)"/>
+  <div style="width:240px;height:2px;background:rgba(255,255,255,.35);overflow:hidden;border-radius:2px;position:relative">
+    <div id="bootBar" style="position:absolute;top:0;left:0;width:0%;height:100%;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.8);transition:width .35s ease"></div>
+  </div>
+  <div id="bootStatus" style="font-family:'Chivo Mono',monospace;font-size:10px;letter-spacing:.24em;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(56,189,248,.3)">INITIALIZING · 0%</div>
+</div>
+<style>
+  #bootLoader.bye { opacity:0; pointer-events:none }
+</style>
+<script>
+(function() {
+  const REQUIRED = ['hdr','floor-basecolor','floor-normal','floor-roughness','floor-metalness','char-glb','bg-video'];
+  const done = new Set();
+  let killTimer = null;
+  const bar = document.getElementById('bootBar');
+  const status = document.getElementById('bootStatus');
+  function refresh() {
+    const pct = Math.round(done.size / REQUIRED.length * 100);
+    if (bar) bar.style.width = pct + '%';
+    if (status) status.textContent = `LOADING · ${pct}%`;
+    if (done.size >= REQUIRED.length) hide();
+  }
+  function hide() {
+    if (status) status.textContent = 'READY';
+    if (killTimer) { clearTimeout(killTimer); killTimer = null; }
+    setTimeout(() => {
+      const el = document.getElementById("bootLoader");
+      if (el) { el.classList.add("bye"); setTimeout(() => el.remove(), 600); }
+    }, 80);
+  }
+  window.__bootMark = (name) => {
+    if (!REQUIRED.includes(name) || done.has(name)) return;
+    done.add(name);
+    refresh();
+  };
+  // Safety net: if anything hangs, dismiss after 6s anyway
+  killTimer = setTimeout(hide, 6000);
+})();
+</script>
+
+
+<!-- Global swap transition fx -->
+<div id="transitionFlash"></div>
+<div id="transitionFx">
+  <div class="tfx-line" style="top:10%;background:linear-gradient(90deg,transparent,var(--c1) 40%,#fff 50%,var(--c1) 60%,transparent);animation-delay:0ms"></div>
+  <div class="tfx-line tfx-bright" style="top:18%;background:linear-gradient(90deg,transparent,#fff,transparent);animation-delay:30ms"></div>
+  <div class="tfx-line" style="top:28%;background:linear-gradient(90deg,transparent,var(--c2),var(--c1),var(--c2),transparent);animation-delay:60ms"></div>
+  <div class="tfx-line" style="top:38%;background:linear-gradient(90deg,transparent,var(--c1) 50%,transparent);animation-delay:140ms"></div>
+  <div class="tfx-line tfx-bright" style="top:48%;background:linear-gradient(90deg,transparent,#fff,transparent);animation-delay:200ms"></div>
+  <div class="tfx-line" style="top:58%;background:linear-gradient(90deg,transparent,var(--c2),var(--c1),var(--c2),transparent);animation-delay:90ms"></div>
+  <div class="tfx-line" style="top:68%;background:linear-gradient(90deg,transparent,var(--c1) 50%,transparent);animation-delay:240ms"></div>
+  <div class="tfx-line tfx-bright" style="top:78%;background:linear-gradient(90deg,transparent,#fff,transparent);animation-delay:170ms"></div>
+  <div class="tfx-line" style="top:88%;background:linear-gradient(90deg,transparent,var(--c2),var(--c1),var(--c2),transparent);animation-delay:300ms"></div>
+</div>
+
+<video id="bgvid-a" class="bgvid bgvid-on" autoplay muted loop playsinline preload="auto">
+  <source src="./assets/video/master-chief.mp4" type="video/mp4">
+</video>
+<video id="bgvid-b" class="bgvid bgvid-off" autoplay muted loop playsinline preload="auto"></video>
+<div class="bgfade"></div>
+<!-- 3D scene — full viewport, sits between the bg video (z=0/1) and the UI panels (z=2) -->
+<canvas id="scene3d" style="position:fixed;inset:0;width:100%;height:100%;display:block;background:transparent;z-index:1;pointer-events:auto"></canvas>
+
+<div class="max-w-[1680px] mx-auto px-4 py-3 space-y-3 flex flex-col" style="height:100vh;pointer-events:none">
+
+  <!-- TOP BAR -->
+  <div class="panel px-5 py-3 flex flex-wrap items-center gap-3 md:gap-6">
+    <div class="flex items-center gap-3">
+      <a href="https://fal.ai" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;pointer-events:auto;text-decoration:none" title="fal.ai">
+        <img class="fal-logo-img" src="./assets/fal-icon.svg" alt="fal" style="height:34px;width:auto;object-fit:contain;filter:brightness(0) invert(1) drop-shadow(0 1px 4px rgba(15,23,42,.45));transform:skewX(-8deg);transition:transform .2s" onmouseover="this.style.transform='skewX(-8deg) scale(1.04)'" onmouseout="this.style.transform='skewX(-8deg) scale(1)'"/>
+      </a>
+    </div>
+    <div class="hidden lg:block h-10 w-px bg-gray-200/70"></div>
+    <div class="hidden lg:flex items-center gap-4">
+      <div style="min-width:54px">
+        <div class="tick" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(15,23,42,.35)">LEVEL</div>
+        <div id="lvText" class="display text-3xl leading-none" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.35)">47</div>
+      </div>
+      <div class="min-w-[150px]">
+        <div class="mono text-[10px]" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(15,23,42,.35)">BOSS KILLS</div>
+        <div class="mono text-[10px] mb-1" style="color:rgba(255,255,255,.65);text-shadow:0 1px 4px rgba(15,23,42,.35)">MAX LEVEL</div>
+        <div class="bar bar-purple"><i id="lvBar" style="width:100%"></i></div>
+      </div>
+    </div>
+    <div class="hidden lg:block h-10 w-px bg-gray-200/70"></div>
+    <div class="hidden lg:block min-w-[170px]">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="mono text-[10px]" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(15,23,42,.35)">HEALTH</span>
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="var(--c1)" stroke-width="2"><path d="M3 12h3l2-5 4 10 2-5h7"/></svg>
+      </div>
+      <div id="hpText" class="text-xl font-light" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.35)">587 / 612</div>
+      <div class="bar bar-cyan mt-1"><i id="hpBar" style="width:100%"></i></div>
+    </div>
+    <div class="hidden lg:block h-10 w-px bg-gray-200/70"></div>
+    <div class="hidden lg:block min-w-[170px]">
+      <div class="mono text-[10px] mb-1" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(15,23,42,.35)">INVENTORY SLOTS</div>
+      <div id="cyberText" class="text-xl font-light" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.35)">16 / 18</div>
+      <div class="bar bar-purple mt-1"><i id="cyberBar" style="width:100%"></i></div>
+    </div>
+    <div class="hidden xl:block h-10 w-px bg-gray-200/70"></div>
+    <div class="hidden xl:block">
+      <div class="mono text-[10px]" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(15,23,42,.35)">AURA</div>
+      <div id="auraVal" class="text-xl font-light tabular-nums" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.35)">247</div>
+      <div class="mono text-[9px] mt-0.5" style="color:rgba(255,255,255,.65);text-shadow:0 1px 4px rgba(15,23,42,.35)">VECTOR · CHROMATIC</div>
+    </div>
+    <div class="hidden xl:block h-10 w-px bg-gray-200/70"></div>
+    <div class="hidden xl:block">
+      <div class="mono text-[10px]" style="color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(15,23,42,.35)">MOMENTUM</div>
+      <div id="momentumVal" class="text-xl font-light tabular-nums" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.35)">1,348</div>
+      <div class="mono text-[9px] mt-0.5" style="color:var(--c2);text-shadow:0 1px 4px rgba(15,23,42,.35)">▲ +40% MoM</div>
+    </div>
+    <div class="flex-1"></div>
+    <div class="hidden xl:flex flex-col items-end justify-center mr-1" style="line-height:1.2">
+      <div class="mono text-[9.5px]" style="color:rgba(255,255,255,.65);letter-spacing:.16em;text-shadow:0 1px 4px rgba(15,23,42,.4)">COORDS</div>
+      <div id="coordLat" class="mono text-[11px] tabular-nums" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.4)">37.7749° N</div>
+      <div id="coordLon" class="mono text-[11px] tabular-nums" style="color:#fff;text-shadow:0 1px 6px rgba(15,23,42,.4)">−122.4194° W</div>
+    </div>
+    <div class="hidden xl:block w-[130px] h-[60px] rounded-lg overflow-hidden hair relative" style="background:linear-gradient(135deg,rgba(224,242,254,.6),rgba(224,242,254,.4))">
+      <svg viewBox="0 0 130 72" class="w-full h-full">
+        <path class="map-terrain-a" d="M-10 30 L40 20 L80 40 L140 25" stroke="var(--c2)" stroke-width="2" fill="none"/>
+        <path class="map-terrain-b" d="M-10 50 L50 55 L90 45 L140 60" stroke="var(--c2)" stroke-width="2" fill="none"/>
+        <path class="map-street-a" d="M30 0 L45 72" stroke="var(--c2)" stroke-width="1"/>
+        <path class="map-street-b" d="M80 0 L95 72" stroke="var(--c2)" stroke-width="1"/>
+        <circle class="map-halo" cx="50" cy="36" r="3" fill="var(--c1)"/>
+        <circle class="map-marker" cx="50" cy="36" r="3" fill="var(--c1)"/>
+        <path class="map-path" d="M50 36 L95 30" stroke="var(--c1)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <path class="map-target" d="M95 26 l4 8 -4 -2 -4 2z" fill="var(--c1)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid grid-cols-12 gap-3 flex-1 min-h-0">
+
+    <!-- LEFT — GAMING LEGENDS -->
+    <div class="col-span-12 md:col-span-5 lg:col-span-3 panel p-4 flex flex-col gap-3 scroll-thin" style="min-height:0;height:100%;overflow-y:auto">
+      <!-- Header -->
+      <div>
+        <div class="mono text-[10px]" style="color:var(--c3);letter-spacing:.16em">GAMING</div>
+        <div class="display text-2xl font-light leading-none" style="color:var(--c1)">LEGENDS</div>
+        <div class="mono text-[9.5px] mt-0.5" style="color:var(--c1);letter-spacing:.18em;font-weight:500">SPEED · SCALE · LEGACY</div>
+      </div>
+
+      <!-- Live TPS panel -->
+      <div class="hair rounded-xl p-3" style="background:linear-gradient(135deg,rgba(125,211,252,.16),rgba(255,255,255,.45))">
+        <div class="flex items-end justify-between mb-1">
+          <div>
+            <div id="liveTps" class="display tabular-nums leading-none" style="font-size:30px;color:var(--c1);font-weight:300">28,470</div>
+            <div class="mono text-[9px]" style="color:var(--c3);letter-spacing:.12em">DEEDS / SEC · LIVE</div>
+          </div>
+          <div class="mono text-[9.5px] flex items-center gap-1" style="color:#0d9488;letter-spacing:.12em">
+            <span style="color:#10b981" id="tpsArrow">▲</span><span id="tpsDelta" class="tabular-nums">+12.3%</span>
+          </div>
+        </div>
+        <svg viewBox="0 0 200 50" preserveAspectRatio="none" style="width:100%;height:46px;display:block;overflow:visible">
+          <defs>
+            <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   style="stop-color:var(--c1);stop-opacity:.55"/>
+              <stop offset="100%" style="stop-color:var(--c1);stop-opacity:0"/>
+            </linearGradient>
+          </defs>
+          <path id="sparkArea" d="" fill="url(#sparkGrad)"/>
+          <path id="sparkLine" d="" fill="none" stroke="var(--c1)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle id="sparkDot" r="2.4" fill="#fff" stroke="var(--c1)" stroke-width="1.2"/>
+        </svg>
+      </div>
+
+      <!-- Two stat cards -->
+      <div class="grid grid-cols-2 gap-2">
+        <div class="hair-2 rounded-lg p-2.5" style="background:rgba(255,255,255,.55)">
+          <div class="mono text-[8.5px]" style="color:var(--c3);letter-spacing:.14em">BATTLES / 24H</div>
+          <div id="reqCount" class="tabular-nums leading-none mt-1" style="color:var(--c1);font-size:17px;font-weight:500">8,472,910</div>
+        </div>
+        <div class="hair-2 rounded-lg p-2.5" style="background:rgba(255,255,255,.55)">
+          <div class="mono text-[8.5px]" style="color:var(--c3);letter-spacing:.14em">LOOT CACHE</div>
+          <div class="tabular-nums leading-none mt-1" style="color:var(--c1);font-size:17px;font-weight:500"><span id="gpuActive">21,480</span> <span class="mono text-[9px]" style="color:var(--c3)">ON</span></div>
+        </div>
+      </div>
+
+      <!-- Edge network — bigger, more detail -->
+      <div class="hair-2 rounded-xl p-3" style="background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.35))">
+        <div class="flex items-baseline justify-between mb-2">
+          <div>
+            <div class="mono text-[9px]" style="color:var(--c3);letter-spacing:.16em">KINGDOM REGIONS</div>
+            <div class="display tabular-nums leading-none mt-0.5" style="font-size:22px;color:var(--c1);font-weight:300">280 <span style="font-size:11px;letter-spacing:.14em" class="mono">REGIONS · LIVE</span></div>
+          </div>
+          <div class="mono text-[9px] text-right" style="color:#0d9488;letter-spacing:.12em"><span class="dot inline-block mr-1" style="background:#10b981;width:7px;height:7px;vertical-align:middle"></span>ALL ALIVE</div>
+        </div>
+        <svg id="edgeMap" viewBox="0 0 220 130" style="width:100%;height:auto;display:block">
+          <defs>
+            <radialGradient id="edgePulse" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--c1)" stop-opacity=".55"/>
+              <stop offset="100%" stop-color="var(--c1)" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- ghost world outline -->
+          <g stroke="rgba(15,23,42,.10)" fill="none" stroke-width=".6">
+            <path d="M6,52 Q26,40 44,46 T78,52 T114,44 Q130,36 146,40 T188,52 T214,58"/>
+            <path d="M14,68 Q40,72 64,66 T100,68 T138,60 Q164,58 192,64 T216,70"/>
+            <path d="M10,86 Q36,94 64,88 T112,92 T156,84 T210,90"/>
+            <path d="M22,104 Q50,108 80,102 T130,106 T180,98 T214,104"/>
+          </g>
+          <!-- Animated route trails (continuously flowing dashes) -->
+          <g stroke="var(--c1)" fill="none" stroke-width="1.1" stroke-dasharray="2 4" style="opacity:.55">
+            <path class="map-path" d="M28,50 L62,44 L94,46 L126,42 L158,52 L188,46 L208,58"/>
+            <path class="map-path" d="M44,68 L74,62 L102,68 L138,64 L168,72 L196,66" style="animation-delay:1.2s"/>
+            <path class="map-path" d="M22,86 L52,82 L84,86 L116,82 L150,88 L184,82 L210,86" style="animation-delay:.6s"/>
+            <path class="map-path" d="M30,104 L60,100 L92,104 L124,100 L160,106 L196,102" style="animation-delay:1.8s"/>
+            <path class="map-path" d="M62,44 L74,62 L84,86 L92,104" style="animation-delay:.4s"/>
+            <path class="map-path" d="M158,52 L168,72 L150,88 L160,106" style="animation-delay:.9s"/>
+          </g>
+          <!-- Expanding pulse rings around 4 active mega-PoPs -->
+          <g fill="none" stroke="var(--c1)" stroke-width=".7">
+            <circle cx="28"  cy="50" r="3" class="edge-ring"/>
+            <circle cx="94"  cy="46" r="3" class="edge-ring" style="animation-delay:.9s"/>
+            <circle cx="158" cy="52" r="3" class="edge-ring" style="animation-delay:1.6s"/>
+            <circle cx="168" cy="72" r="3" class="edge-ring" style="animation-delay:2.4s"/>
+          </g>
+          <!-- 28 region dots (pulsing + static) -->
+          <g id="edgeDots">
+            <circle cx="28"  cy="50" r="3.2" fill="var(--c1)" class="edge-dot edge-pulse"/>
+            <circle cx="44"  cy="56" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="62"  cy="44" r="2.4" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="78"  cy="56" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="94"  cy="46" r="3.2" fill="var(--c1)" class="edge-dot edge-pulse" style="animation-delay:.7s"/>
+            <circle cx="106" cy="58" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="120" cy="42" r="2.4" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="136" cy="48" r="2.6" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="148" cy="40" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="158" cy="52" r="3.2" fill="var(--c1)" class="edge-dot edge-pulse" style="animation-delay:1.3s"/>
+            <circle cx="174" cy="44" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="188" cy="50" r="2.4" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="200" cy="62" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="212" cy="56" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="32"  cy="68" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="54"  cy="74" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="74"  cy="62" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="102" cy="68" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="138" cy="64" r="2.4" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="168" cy="72" r="3.2" fill="var(--c1)" class="edge-dot edge-pulse" style="animation-delay:2.1s"/>
+            <circle cx="196" cy="66" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="22"  cy="86" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="52"  cy="82" r="2.2" fill="var(--c1)" class="edge-dot edge-pulse" style="animation-delay:2.7s"/>
+            <circle cx="84"  cy="86" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="116" cy="82" r="2.2" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="150" cy="88" r="2"   fill="var(--c1)" class="edge-dot"/>
+            <circle cx="184" cy="82" r="2.4" fill="var(--c1)" class="edge-dot"/>
+            <circle cx="60"  cy="100" r="2"  fill="var(--c1)" class="edge-dot"/>
+            <circle cx="160" cy="106" r="2.2" fill="var(--c1)" class="edge-dot"/>
+          </g>
+          <!-- region labels — anchor 6 majors -->
+          <g font-family="Chivo Mono, monospace" font-size="6" fill="var(--c3)" letter-spacing=".5">
+            <text x="28"  y="120" text-anchor="middle">SFO</text>
+            <text x="62"  y="120" text-anchor="middle">DFW</text>
+            <text x="94"  y="120" text-anchor="middle">NYC</text>
+            <text x="120" y="120" text-anchor="middle">LON</text>
+            <text x="148" y="120" text-anchor="middle">FRA</text>
+            <text x="168" y="120" text-anchor="middle">TYO</text>
+            <text x="200" y="120" text-anchor="middle">SYD</text>
+          </g>
+        </svg>
+        <!-- Active PoP indicator -->
+        <div class="flex items-center justify-between mt-2 pt-2 hair-2" style="border-top-color:rgba(15,23,42,.05)">
+          <div>
+            <div class="mono text-[8.5px]" style="color:var(--c3);letter-spacing:.14em">ACTIVE PoP</div>
+            <div id="popName" class="display" style="font-size:13px;color:var(--c1);font-weight:500">SFO · 37.77° N</div>
+          </div>
+          <div class="text-right">
+            <div class="mono text-[8.5px]" style="color:var(--c3);letter-spacing:.14em">CONNECTIONS</div>
+            <div id="popConn" class="tabular-nums" style="font-size:13px;color:var(--c1);font-weight:500">143,920</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Latency to regions -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="mono text-[10px]" style="color:var(--c3);letter-spacing:.16em">RESPONSE · P50</div>
+          <div class="mono text-[10px]" style="color:var(--c1);letter-spacing:.12em">milliseconds</div>
+        </div>
+        <div class="flex flex-col gap-2" id="latencyRows">
+          <div class="flex items-center gap-2.5 text-[12px]">
+            <span class="mono" style="color:var(--c1);width:34px;font-weight:500">SFO</span>
+            <div class="bar bar-cyan flex-1" style="height:6px"><i data-lat-bar="sfo" style="width:38%"></i></div>
+            <span class="tabular-nums" style="color:var(--c1);width:42px;text-align:right;font-weight:500" data-lat-val="sfo">76</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-[12px]">
+            <span class="mono" style="color:var(--c1);width:34px;font-weight:500">NYC</span>
+            <div class="bar bar-cyan flex-1" style="height:6px"><i data-lat-bar="nyc" style="width:48%"></i></div>
+            <span class="tabular-nums" style="color:var(--c1);width:42px;text-align:right;font-weight:500" data-lat-val="nyc">96</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-[12px]">
+            <span class="mono" style="color:var(--c1);width:34px;font-weight:500">FRA</span>
+            <div class="bar bar-cyan flex-1" style="height:6px"><i data-lat-bar="fra" style="width:55%"></i></div>
+            <span class="tabular-nums" style="color:var(--c1);width:42px;text-align:right;font-weight:500" data-lat-val="fra">110</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-[12px]">
+            <span class="mono" style="color:var(--c1);width:34px;font-weight:500">TYO</span>
+            <div class="bar bar-cyan flex-1" style="height:6px"><i data-lat-bar="tyo" style="width:72%"></i></div>
+            <span class="tabular-nums" style="color:var(--c1);width:42px;text-align:right;font-weight:500" data-lat-val="tyo">144</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-[12px]">
+            <span class="mono" style="color:var(--c1);width:34px;font-weight:500">SYD</span>
+            <div class="bar bar-cyan flex-1" style="height:6px"><i data-lat-bar="syd" style="width:80%"></i></div>
+            <span class="tabular-nums" style="color:var(--c1);width:42px;text-align:right;font-weight:500" data-lat-val="syd">160</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active models -->
+      <div>
+        <div class="mono text-[9px] mb-2" style="color:var(--c3);letter-spacing:.14em">SIGNATURE MOVES · 7</div>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="model-pill"><span class="model-dot"></span>FLUX 2</span>
+          <span class="model-pill"><span class="model-dot"></span>SEEDANCE 2</span>
+          <span class="model-pill"><span class="model-dot"></span>KLEIN</span>
+          <span class="model-pill"><span class="model-dot"></span>KONTEXT</span>
+          <span class="model-pill"><span class="model-dot"></span>HUNYUAN 3D</span>
+          <span class="model-pill"><span class="model-dot"></span>MESHY V6</span>
+          <span class="model-pill"><span class="model-dot"></span>GPT-IMG-2</span>
+        </div>
+      </div>
+
+      <!-- Bottom block — always pinned to bottom of panel -->
+      <div class="mt-auto pt-3" style="border-top:1px solid rgba(15,23,42,.06)">
+        <div class="flex items-center justify-between mb-2">
+          <a href="https://fal.ai" target="_blank" rel="noopener" class="hair rounded-lg px-2 py-1 inline-flex items-center gap-1.5" style="background:rgba(255,255,255,.6);text-decoration:none;pointer-events:auto;transition:background .2s,transform .2s" onmouseover="this.style.background='rgba(255,255,255,.85)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,.6)';this.style.transform='translateY(0)'" title="visit fal.ai">
+            <div class="fal-diamond" style="width:11px;height:11px;border-radius:3px"></div>
+            <span class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.14em">FAL.AI →</span>
+          </a>
+          <div class="mono text-[9px]" style="color:var(--c3);letter-spacing:.12em"><span class="dot inline-block mr-1" style="background:#10b981;width:6px;height:6px;vertical-align:middle"></span>v 4.1.7 · LIVE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER PANEL — empty placeholder; the 3D canvas lives full-viewport behind every panel -->
+    <div class="hidden lg:block lg:col-span-5 panel-clear relative overflow-visible pointer-events-none" style="min-height:0;height:100%"></div>
+
+    <!-- RIGHT — CHARACTER SELECT (vertical roster) -->
+    <div class="col-span-12 md:col-span-7 lg:col-span-4 panel p-5 flex flex-col gap-3" style="height:100%;min-height:0">
+      <div>
+        <div class="mono text-[10px]" style="color:var(--c3);letter-spacing:.16em">CHARACTER —</div>
+        <div class="display text-xl font-medium" style="color:var(--c1)">SELECT</div>
+        <div class="mono text-[10px] mt-0.5" style="color:var(--c3);letter-spacing:.10em">click a card to switch character</div>
+      </div>
+      <div id="roster" class="scroll-thin" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;min-height:0;padding-right:4px">
+
+        <!-- Create-your-own tile -->
+        <div id="createOwn" class="char" style="border:1px dashed var(--c2);background:linear-gradient(135deg,rgba(224,242,254,.5),rgba(186,230,253,.4))">
+          <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--c2),var(--c1));display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:300;">+</div>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold grad-rose">CREATE YOUR OWN</div>
+            <div class="mono text-[9.5px] text-gray-500">describe → generate → play</div>
+          </div>
+          <div class="text-right"><span class="tier S">NEW</span></div>
+        </div>
+
+        <div class="char" data-id="MASTER-CHIEF" data-guild="MASTER-CHIEF" data-stats="{&quot;hp&quot;: 480, &quot;cyber&quot;: 24, &quot;qh&quot;: [8, 15, 6, 13, 4, 11], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 566152, &quot;carry&quot;: [68, 138], &quot;tasks&quot;: 9, &quot;sysver&quot;: &quot;1.8.4.6&quot;, &quot;map&quot;: &quot;REQUIEM&quot;, &quot;gig&quot;: &quot;OPERATION FIRSTSTRIKE&quot;, &quot;district&quot;: &quot;INSTALLATION 04&quot;, &quot;temp&quot;: 16, &quot;role&quot;: &quot;SPARTAN-117&quot;, &quot;level&quot;: 38, &quot;tier&quot;: &quot;S&quot;}" data-accent="#5B8C5A" data-glb="./assets/glb/master-chief.glb" data-bgsrc="./assets/video/master-chief.mp4">
+          <img class="char-portrait" src="./assets/characters/master-chief.png" alt="MASTER-CHIEF" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">MASTER-CHIEF</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">SPARTAN-117 · HALO<span class="dot ml-1" style="background:var(--c1)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier S">TIER S</span></div>
+        </div>
+
+        <div class="char" data-id="KRATOS" data-guild="KRATOS" data-stats="{&quot;hp&quot;: 520, &quot;cyber&quot;: 22, &quot;qh&quot;: [4, 11, 2, 9, 0, 7], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 426540, &quot;carry&quot;: [80, 190], &quot;tasks&quot;: 1, &quot;sysver&quot;: &quot;2.0.0.0&quot;, &quot;map&quot;: &quot;MIDGARD&quot;, &quot;gig&quot;: &quot;GHOST OF SPARTA&quot;, &quot;district&quot;: &quot;LAKE OF NINE&quot;, &quot;temp&quot;: 8, &quot;role&quot;: &quot;GOD SLAYER&quot;, &quot;level&quot;: 40, &quot;tier&quot;: &quot;S&quot;}" data-accent="#C0392B" data-glb="./assets/glb/kratos.glb" data-bgsrc="./assets/video/kratos.mp4">
+          <img class="char-portrait" src="./assets/characters/kratos.png" alt="KRATOS" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">KRATOS</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">GOD SLAYER · GOD OF WAR<span class="dot ml-1" style="background:var(--c2)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier S">TIER S</span></div>
+        </div>
+
+        <div class="char" data-id="LINK" data-guild="LINK" data-stats="{&quot;hp&quot;: 680, &quot;cyber&quot;: 13, &quot;qh&quot;: [14, 5, 12, 3, 10, 1], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 705170, &quot;carry&quot;: [90, 160], &quot;tasks&quot;: 11, &quot;sysver&quot;: &quot;3.0.0.0&quot;, &quot;map&quot;: &quot;HYRULE&quot;, &quot;gig&quot;: &quot;MASTER SWORD&quot;, &quot;district&quot;: &quot;KOKIRI FOREST&quot;, &quot;temp&quot;: 18, &quot;role&quot;: &quot;HERO OF TIME&quot;, &quot;level&quot;: 35, &quot;tier&quot;: &quot;S&quot;}" data-accent="#27AE60" data-glb="./assets/glb/link.glb" data-bgsrc="./assets/video/link.mp4">
+          <img class="char-portrait" src="./assets/characters/link.png" alt="LINK" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">LINK</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">HERO OF TIME · LEGEND OF ZELDA<span class="dot ml-1" style="background:var(--c1)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier S">TIER S</span></div>
+        </div>
+
+        <div class="char" data-id="MARIO" data-guild="MARIO" data-stats="{&quot;hp&quot;: 600, &quot;cyber&quot;: 15, &quot;qh&quot;: [8, 15, 6, 13, 4, 11], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 144584, &quot;carry&quot;: [116, 166], &quot;tasks&quot;: 9, &quot;sysver&quot;: &quot;4.6.8.2&quot;, &quot;map&quot;: &quot;MUSHROOM KINGDOM&quot;, &quot;gig&quot;: &quot;RESCUE PEACH&quot;, &quot;district&quot;: &quot;WORLD 1-1&quot;, &quot;temp&quot;: 34, &quot;role&quot;: &quot;SUPER PLUMBER&quot;, &quot;level&quot;: 41, &quot;tier&quot;: &quot;S&quot;}" data-accent="#E74C3C" data-glb="./assets/glb/mario.glb" data-bgsrc="./assets/video/mario.mp4">
+          <img class="char-portrait" src="./assets/characters/mario.png" alt="MARIO" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">MARIO</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">SUPER PLUMBER · SUPER MARIO<span class="dot ml-1" style="background:var(--c2)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier S">TIER S</span></div>
+        </div>
+
+        <div class="char" data-id="SAMUS" data-guild="SAMUS" data-stats="{&quot;hp&quot;: 560, &quot;cyber&quot;: 19, &quot;qh&quot;: [9, 0, 7, 14, 5, 12], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 279207, &quot;carry&quot;: [133, 183], &quot;tasks&quot;: 2, &quot;sysver&quot;: &quot;1.3.9.1&quot;, &quot;map&quot;: &quot;ZEBES&quot;, &quot;gig&quot;: &quot;MOTHER BRAIN&quot;, &quot;district&quot;: &quot;BRINSTAR&quot;, &quot;temp&quot;: 21, &quot;role&quot;: &quot;BOUNTY HUNTER&quot;, &quot;level&quot;: 33, &quot;tier&quot;: &quot;A&quot;}" data-accent="#E67E22" data-glb="./assets/glb/samus.glb" data-bgsrc="./assets/video/samus.mp4">
+          <img class="char-portrait" src="./assets/characters/samus.png" alt="SAMUS" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">SAMUS</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">BOUNTY HUNTER · METROID<span class="dot ml-1" style="background:var(--c1)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier A">TIER A</span></div>
+        </div>
+
+        <div class="char" data-id="CLOUD" data-guild="CLOUD" data-stats="{&quot;hp&quot;: 560, &quot;cyber&quot;: 14, &quot;qh&quot;: [7, 14, 5, 12, 3, 10], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 136665, &quot;carry&quot;: [115, 165], &quot;tasks&quot;: 8, &quot;sysver&quot;: &quot;2.5.5.5&quot;, &quot;map&quot;: &quot;MIDGAR&quot;, &quot;gig&quot;: &quot;REACTOR No. 1&quot;, &quot;district&quot;: &quot;SECTOR 7 SLUMS&quot;, &quot;temp&quot;: 33, &quot;role&quot;: &quot;SOLDIER 1ST&quot;, &quot;level&quot;: 40, &quot;tier&quot;: &quot;A&quot;}" data-accent="#2C3E50" data-glb="./assets/glb/cloud.glb" data-bgsrc="./assets/video/cloud.mp4">
+          <img class="char-portrait" src="./assets/characters/cloud.png" alt="CLOUD" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">CLOUD</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">SOLDIER 1ST · FINAL FANTASY VII<span class="dot ml-1" style="background:var(--c2)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier A">TIER A</span></div>
+        </div>
+
+        <div class="char" data-id="SNAKE" data-guild="SNAKE" data-stats="{&quot;hp&quot;: 720, &quot;cyber&quot;: 22, &quot;qh&quot;: [2, 9, 0, 7, 14, 5], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 797070, &quot;carry&quot;: [110, 160], &quot;tasks&quot;: 3, &quot;sysver&quot;: &quot;3.0.0.0&quot;, &quot;map&quot;: &quot;SHADOW MOSES&quot;, &quot;gig&quot;: &quot;TACTICAL ESPIONAGE&quot;, &quot;district&quot;: &quot;ALASKAN BLACK SITE&quot;, &quot;temp&quot;: 28, &quot;role&quot;: &quot;FOXHOUND&quot;, &quot;level&quot;: 35, &quot;tier&quot;: &quot;A&quot;}" data-accent="#2C3E50" data-glb="./assets/glb/snake.glb" data-bgsrc="./assets/video/snake.mp4">
+          <img class="char-portrait" src="./assets/characters/snake.png" alt="SNAKE" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">SNAKE</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">FOXHOUND · METAL GEAR SOLID<span class="dot ml-1" style="background:var(--c1)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier A">TIER A</span></div>
+        </div>
+
+        <div class="char" data-id="GERALT" data-guild="GERALT" data-stats="{&quot;hp&quot;: 400, &quot;cyber&quot;: 14, &quot;qh&quot;: [15, 6, 13, 4, 11, 2], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 260241, &quot;carry&quot;: [139, 169], &quot;tasks&quot;: 4, &quot;sysver&quot;: &quot;4.9.7.3&quot;, &quot;map&quot;: &quot;VELEN&quot;, &quot;gig&quot;: &quot;WILD HUNT&quot;, &quot;district&quot;: &quot;WHITE ORCHARD&quot;, &quot;temp&quot;: 17, &quot;role&quot;: &quot;WITCHER&quot;, &quot;level&quot;: 44, &quot;tier&quot;: &quot;A&quot;}" data-accent="#7F8C8D" data-glb="./assets/glb/geralt.glb" data-bgsrc="./assets/video/geralt.mp4">
+          <img class="char-portrait" src="./assets/characters/geralt.png" alt="GERALT" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">GERALT</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">WITCHER · THE WITCHER 3<span class="dot ml-1" style="background:var(--c2)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier A">TIER A</span></div>
+        </div>
+
+        <div class="char" data-id="ALOY" data-guild="ALOY" data-stats="{&quot;hp&quot;: 600, &quot;cyber&quot;: 20, &quot;qh&quot;: [5, 12, 3, 10, 1, 8], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 760603, &quot;carry&quot;: [97, 167], &quot;tasks&quot;: 6, &quot;sysver&quot;: &quot;1.7.1.9&quot;, &quot;map&quot;: &quot;FORBIDDEN WEST&quot;, &quot;gig&quot;: &quot;MOTHER'S HEART&quot;, &quot;district&quot;: &quot;NORA SACRED LAND&quot;, &quot;temp&quot;: 25, &quot;role&quot;: &quot;SEEKER&quot;, &quot;level&quot;: 42, &quot;tier&quot;: &quot;A&quot;}" data-accent="#E74C3C" data-glb="./assets/glb/aloy.glb" data-bgsrc="./assets/video/aloy.mp4">
+          <img class="char-portrait" src="./assets/characters/aloy.png" alt="ALOY" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">ALOY</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">SEEKER · HORIZON ZERO DAWN<span class="dot ml-1" style="background:var(--c1)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier A">TIER A</span></div>
+        </div>
+
+        <div class="char" data-id="LARA" data-guild="LARA" data-stats="{&quot;hp&quot;: 480, &quot;cyber&quot;: 12, &quot;qh&quot;: [0, 7, 14, 5, 12, 3], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 594304, &quot;carry&quot;: [76, 146], &quot;tasks&quot;: 9, &quot;sysver&quot;: &quot;2.6.8.2&quot;, &quot;map&quot;: &quot;YAMATAI&quot;, &quot;gig&quot;: &quot;ENDURANCE&quot;, &quot;district&quot;: &quot;DRAGON'S TRIANGLE&quot;, &quot;temp&quot;: 34, &quot;role&quot;: &quot;TOMB RAIDER&quot;, &quot;level&quot;: 46, &quot;tier&quot;: &quot;B&quot;}" data-accent="#5D4E37" data-glb="./assets/glb/lara.glb" data-bgsrc="./assets/video/lara.mp4">
+          <img class="char-portrait" src="./assets/characters/lara.png" alt="LARA" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">LARA</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">TOMB RAIDER · TOMB RAIDER<span class="dot ml-1" style="background:var(--c2)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier B">TIER B</span></div>
+        </div>
+
+        <div class="char" data-id="ARTHUR" data-guild="ARTHUR" data-stats="{&quot;hp&quot;: 600, &quot;cyber&quot;: 24, &quot;qh&quot;: [6, 13, 4, 11, 2, 9], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 442378, &quot;carry&quot;: [82, 192], &quot;tasks&quot;: 3, &quot;sysver&quot;: &quot;3.2.6.4&quot;, &quot;map&quot;: &quot;WEST ELIZABETH&quot;, &quot;gig&quot;: &quot;BLACKWATER JOB&quot;, &quot;district&quot;: &quot;VAN DER LINDE CAMP&quot;, &quot;temp&quot;: 10, &quot;role&quot;: &quot;OUTLAW&quot;, &quot;level&quot;: 42, &quot;tier&quot;: &quot;B&quot;}" data-accent="#8B4513" data-glb="./assets/glb/arthur.glb" data-bgsrc="./assets/video/arthur.mp4">
+          <img class="char-portrait" src="./assets/characters/arthur.png" alt="ARTHUR" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">ARTHUR</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">OUTLAW · RED DEAD REDEMPTION 2<span class="dot ml-1" style="background:var(--c1)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier B">TIER B</span></div>
+        </div>
+
+        <div class="char" data-id="JOEL" data-guild="JOEL" data-stats="{&quot;hp&quot;: 520, &quot;cyber&quot;: 22, &quot;qh&quot;: [10, 1, 8, 15, 6, 13], &quot;yoff&quot;: 0.0, &quot;eddy&quot;: 673494, &quot;carry&quot;: [86, 156], &quot;tasks&quot;: 7, &quot;sysver&quot;: &quot;4.6.8.2&quot;, &quot;map&quot;: &quot;QUARANTINE ZONE&quot;, &quot;gig&quot;: &quot;SMUGGLE THE CARGO&quot;, &quot;district&quot;: &quot;BOSTON Q.Z.&quot;, &quot;temp&quot;: 14, &quot;role&quot;: &quot;SURVIVOR&quot;, &quot;level&quot;: 31, &quot;tier&quot;: &quot;B&quot;}" data-accent="#5D4E37" data-glb="./assets/glb/joel.glb" data-bgsrc="./assets/video/joel.mp4">
+          <img class="char-portrait" src="./assets/characters/joel.png" alt="JOEL" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold" style="color:var(--c1)">JOEL</div>
+            <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">SURVIVOR · THE LAST OF US<span class="dot ml-1" style="background:var(--c2)"></span></div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1"><span class="tier B">TIER B</span></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LEGACY SCORE BAR -->
+  <div class="panel px-5 py-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
+    <div class="flex items-center gap-2">
+      <span style="color:var(--c1);font-size:18px">⚡</span>
+      <div>
+        <div class="mono text-[9px]" style="color:rgba(255,255,255,.7);letter-spacing:.14em;text-shadow:0 1px 4px rgba(15,23,42,.4)">LEGACY SCORE</div>
+        <div id="eddyVal" class="tabular-nums" style="color:#fff;font-weight:500;text-shadow:0 1px 4px rgba(15,23,42,.4)">★ 427,893</div>
+      </div>
+    </div>
+    <div class="hidden md:block h-8 w-px bg-white/30"></div>
+    <div>
+      <div class="mono text-[9px]" style="color:rgba(255,255,255,.7);letter-spacing:.14em;text-shadow:0 1px 4px rgba(15,23,42,.4)">QUESTS</div>
+      <div><span id="tasksVal" class="tabular-nums" style="color:#fff;font-weight:500;text-shadow:0 1px 4px rgba(15,23,42,.4)">7</span> <span class="mono text-[10px]" style="color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(15,23,42,.4)">COMPLETED</span></div>
+    </div>
+    <div class="hidden md:block h-8 w-px bg-white/30"></div>
+    <div>
+      <div class="mono text-[9px]" style="color:rgba(255,255,255,.7);letter-spacing:.14em;text-shadow:0 1px 4px rgba(15,23,42,.4)">GAME VER</div>
+      <div id="sysverVal" class="mono tabular-nums" style="color:#fff;font-weight:500;text-shadow:0 1px 4px rgba(15,23,42,.4)">2.1.2.0</div>
+    </div>
+    <div class="flex-1"></div>
+    <div class="w-full md:w-[300px] lg:w-[340px] xl:w-[380px] flex-none">
+      <div class="flex items-center justify-between mb-1">
+        <span class="mono text-[9px]" style="color:rgba(255,255,255,.7);letter-spacing:.14em;text-shadow:0 1px 4px rgba(15,23,42,.4)">CARRY WEIGHT</span>
+        <span id="carryVal" class="mono text-[10px] tabular-nums" style="color:#fff;text-shadow:0 1px 4px rgba(15,23,42,.4)">142 / 150 · 94.7%</span>
+      </div>
+      <div class="bar bar-cyan"><i id="carryBar" style="width:94.7%"></i></div>
+    </div>
+    <div class="hidden md:block h-8 w-px bg-white/30"></div>
+    <div class="bottom-notice mono ml-auto">
+      <div>ⓘ illustrative interface — stats are decorative, not real game telemetry</div>
+      <div><b>GAMING LEGENDS</b> · built by <a href="https://allenschiffman.com" target="_blank" rel="noopener">Allen Schiffman</a> · powered by <a href="https://fal.ai" target="_blank" rel="noopener">fal.ai</a> × <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a></div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- CREATE-YOUR-OWN MODAL -->
+<div id="createModal" style="position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.45);backdrop-filter:blur(6px)">
+  <div class="panel" style="width:min(560px,92vw);max-height:92vh;overflow-y:auto;padding:24px;background:rgba(255,255,255,.94)">
+    <div class="display text-2xl font-light grad-rose mb-1">CREATE YOUR OWN</div>
+    <div class="mono text-[10px] text-gray-500 mb-2">flux-2 klein 9b (image) → meshy v6 rigged (character) + flux-2 klein 9b/edit + meshy v6 (companion creature) — runs in background, you can keep using the page</div>
+    <div class="mono text-[10px] mb-4" style="color:#b45309;background:rgba(252,211,77,.15);border:1px solid rgba(180,83,9,.25);border-radius:8px;padding:8px 10px;line-height:1.5">
+      ⚠ <b>cost notice</b> — generating triggers 4 fal.ai calls (2 image gen + 2 meshy 3D rigging). Estimated ~$2-3 of fal credits per character. Your FAL_KEY is used directly from your browser.
+    </div>
+    <label class="mono text-[9px] text-gray-500 letter-tracked block mt-3 mb-1" style="letter-spacing:.16em">CHARACTER PROMPT</label>
+    <textarea id="ownPrompt" class="w-full p-3 rounded-lg border border-sky-200 text-[13px] focus:outline-none focus:border-sky-400" rows="3" placeholder="e.g. female ninja operative in white-and-mint tech streetwear, sleek hooded visor, athletic, fully covered"></textarea>
+    <label class="mono text-[9px] text-gray-500 letter-tracked block mt-3 mb-1" style="letter-spacing:.16em">COMPANION CREATURE PROMPT (optional)</label>
+    <textarea id="ownCompanionPrompt" class="w-full p-3 rounded-lg border border-sky-200 text-[13px] focus:outline-none focus:border-sky-400" rows="2" placeholder="e.g. small cat-fox creature with glowing mint crystals, fluffy tail, cute"></textarea>
+    <div class="flex items-center gap-2 mt-3">
+      <input id="ownName" class="flex-1 p-2 rounded-lg border border-sky-200 text-[13px] mono uppercase" placeholder="NAME (e.g. ECHO-9)" maxlength="12"/>
+      <input id="ownRole" class="flex-1 p-2 rounded-lg border border-sky-200 text-[13px] mono uppercase" placeholder="ROLE (e.g. SHADE OPERATIVE)" maxlength="22"/>
+    </div>
+    <details class="mt-3">
+      <summary class="mono text-[10px] text-gray-500 cursor-pointer">FAL_KEY (saved locally only)</summary>
+      <input id="falKey" type="password" class="w-full mt-2 p-2 rounded-lg border border-sky-200 text-[12px] mono" placeholder="paste your FAL key…"/>
+      <div class="mono text-[10px] text-gray-500 mt-1.5">
+        no key? get one at <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener" style="color:#0369a1;text-decoration:underline;text-underline-offset:2px;font-weight:500">fal.ai/dashboard/keys →</a>
+      </div>
+    </details>
+    <div id="ownProgress" class="mt-4 hidden">
+      <div class="bar bar-purple"><i id="ownBar" style="width:0%"></i></div>
+      <div id="ownStatus" class="mono text-[10px] text-gray-500 mt-1.5">queued…</div>
+    </div>
+    <div class="flex justify-between items-center gap-2 mt-5">
+      <button id="ownCancel" class="px-4 py-2 rounded-lg text-[12px] mono text-gray-500 hover:text-gray-800">CANCEL</button>
+      <div class="flex items-center gap-2">
+        <button id="ownMinimize" class="px-4 py-2 rounded-lg text-[12px] mono text-sky-700 hover:bg-sky-50 hidden" title="continue generation in background">↘ MINIMIZE</button>
+        <button id="ownGo" class="btn-roster">GENERATE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Active-class toggling is handled by the Three.js block below (which also
+  // does GLB swap + bg crossfade). The createOwn tile is wired in its own block.
+
+  // Create-your-own modal
+  const modal = document.getElementById('createModal');
+  const $ = (id) => document.getElementById(id);
+  const createOwnTile = document.getElementById('createOwn');
+
+  // State — generation can run in background while user explores
+  let __customGenerating = false;
+  let __customCard = null;          // when a custom char card has been spawned (replaces tile)
+  const __customState = { desc: '', companionDesc: '', name: '', role: '' };
+
+  function openModal() {
+    modal.style.display = 'flex';
+    const k = localStorage.getItem('FAL_KEY'); if (k) $('falKey').value = k;
+    $('ownPrompt').value = __customState.desc;
+    $('ownCompanionPrompt').value = __customState.companionDesc;
+    $('ownName').value = __customState.name;
+    $('ownRole').value = __customState.role;
+    $('ownMinimize').classList.toggle('hidden', !__customGenerating);
+  }
+  function closeModal() { modal.style.display = 'none'; }
+
+  // The createOwn tile click can come from either (a) the original "+ CREATE YOUR OWN" tile
+  // or (b) the post-generation custom card's re-create button. We always open the modal here.
+  createOwnTile.addEventListener('click', openModal);
+  $('ownCancel').addEventListener('click', closeModal);
+  $('ownMinimize').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
+
+  async function falQueueRunBrowser(model, payload, key, { onStatus = ()=>{}, pollMs = 4000, maxMs = 600000 } = {}) {
+    const submit = await fetch(`https://queue.fal.run/${model}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Key ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!submit.ok) throw new Error(`submit ${model}: ${submit.status}`);
+    const { request_id } = await submit.json();
+    const ns = model.split('/').slice(0,2).join('/'); // app namespace
+    const t0 = Date.now();
+    while (Date.now() - t0 < maxMs) {
+      await new Promise(r => setTimeout(r, pollMs));
+      const sres = await fetch(`https://queue.fal.run/${ns}/requests/${request_id}/status`, { headers: { 'Authorization': `Key ${key}` } });
+      const sj = await sres.json();
+      onStatus(sj.status);
+      if (sj.status === 'COMPLETED') {
+        const r = await fetch(`https://queue.fal.run/${ns}/requests/${request_id}`, { headers: { 'Authorization': `Key ${key}` } });
+        return await r.json();
+      }
+      if (['FAILED','CANCELED','ERROR'].includes(sj.status)) throw new Error(`${model} ${sj.status}`);
+    }
+    throw new Error(`${model} timed out`);
+  }
+
+  function setProgress(pct, msg) {
+    $('ownProgress').classList.remove('hidden');
+    $('ownBar').style.width = pct + '%';
+    $('ownStatus').textContent = msg;
+    // Also update the createOwn tile's caption so users see progress while the modal is closed
+    if (__customGenerating && createOwnTile && createOwnTile.style.display !== 'none') {
+      const monoEl = createOwnTile.querySelector('.flex-1 .mono');
+      if (monoEl) monoEl.textContent = msg.length > 28 ? msg.slice(0,26)+'…' : msg;
+      const barI = createOwnTile.querySelector('[data-tile-bar] i');
+      if (barI) barI.style.width = pct + '%';
+    }
+  }
+
+  function setOwnTileLoading(name) {
+    createOwnTile.style.display = 'flex';
+    createOwnTile.innerHTML = `
+      <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--c2),var(--c1));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:300;animation:pulse-soft 1.4s ease-in-out infinite">⌛</div>
+      <div class="flex-1">
+        <div class="text-[13px] font-semibold" style="color:var(--c1)">${name || 'CUSTOM'}</div>
+        <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.06em">queued…</div>
+        <div data-tile-bar class="bar bar-cyan mt-1" style="height:3px"><i style="width:0%"></i></div>
+      </div>
+      <div class="text-right"><span class="tier S">…</span></div>`;
+  }
+
+  function setOwnTileIdle() {
+    createOwnTile.style.display = 'flex';
+    createOwnTile.innerHTML = `
+      <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--c2),var(--c1));display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:300;">+</div>
+      <div class="flex-1">
+        <div class="text-[13px] font-semibold grad-rose">CREATE YOUR OWN</div>
+        <div class="mono text-[9.5px] text-gray-500">describe → generate → play</div>
+      </div>
+      <div class="text-right"><span class="tier S">NEW</span></div>`;
+    if (__customCard) { __customCard.remove(); __customCard = null; }
+  }
+
+  function setOwnTileDone({ name, role, glb, imgUrl, accent }) {
+    // Replace the createOwn tile with a real custom char card at start of roster
+    createOwnTile.style.display = 'none';
+    if (__customCard) { __customCard.remove(); }
+    __customCard = document.createElement('div');
+    __customCard.className = 'char';
+    __customCard.dataset.id = name;
+    __customCard.dataset.guild = '';
+    __customCard.dataset.glb = glb;
+    __customCard.dataset.accent = accent || '#38bdf8';
+    __customCard.dataset.bgsrc = '';
+    __customCard.style.position = 'relative';
+    __customCard.innerHTML = `
+      <img class="char-portrait" src="${imgUrl}" alt="${name}" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;border:1px solid rgba(56,189,248,.2)"/>
+      <div class="flex-1">
+        <div class="text-[13px] font-semibold" style="color:var(--c1)">${name}</div>
+        <div class="mono text-[9.5px]" style="color:var(--c1);letter-spacing:.12em;font-weight:500">${role}<span class="dot ml-1" style="background:var(--c2)"></span></div>
+      </div>
+      <div class="text-right flex flex-col items-end gap-1"><span class="tier S">YOURS</span></div>
+      <button class="custom-recreate" title="re-create" style="position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.85);border:1px solid var(--c1);color:var(--c1);font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;pointer-events:auto;z-index:2">↻</button>`;
+    const roster = document.getElementById('roster');
+    roster.insertBefore(__customCard, roster.firstChild);
+    __customCard.querySelector('.custom-recreate').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openModal();
+    });
+    __customCard.addEventListener('click', () => {
+      document.querySelectorAll('#roster .char').forEach(c => c.classList.remove('active'));
+      __customCard.classList.add('active');
+      window.__activeId = name;
+      if (typeof window.flashTransition === 'function') window.flashTransition();
+      if (__customCard.dataset.glb) window.swapCharacter(__customCard.dataset.glb);
+      if (typeof window.updateStats === "function") window.updateStats(__customCard);
+    });
+    // Auto-select on completion
+    document.querySelectorAll('#roster .char').forEach(c => c.classList.remove('active'));
+    __customCard.classList.add('active');
+    window.__activeId = name;
+    window.swapCharacter(glb);
+    if (typeof window.updateStats === "function") window.updateStats(__customCard);
+  }
+
+  async function runGeneration({ desc, companionDesc, name, role, key }) {
+    __customGenerating = true;
+    $('ownMinimize').classList.remove('hidden');
+    $('ownGo').disabled = true; $('ownGo').textContent = 'WORKING…';
+    setOwnTileLoading(name);
+
+    try {
+      const charPrompt = `Photoreal stylized 3D character, full body T-pose facing camera, neutral confident expression, ${desc}, fully covered no exposed skin beyond face/hands, video-game character aesthetic, NOT manga/anime/sexy, soft cinematic studio key light, plain off-white seamless studio background, 1024x1536 portrait, vertical, painterly photoreal`;
+      setProgress(8, 'flux-2 klein 9b — rendering character…');
+      const img = await falQueueRunBrowser('fal-ai/flux-2/klein/9b', {
+        prompt: charPrompt,
+        image_size: { width: 1024, height: 1536 },
+        num_images: 1, output_format: 'png'
+      }, key, { onStatus: s => setProgress(20, `flux ${s}`), pollMs: 2500, maxMs: 120000 });
+      const imgUrl = img?.images?.[0]?.url;
+      if (!imgUrl) throw new Error('no image url');
+      setProgress(30, 'meshy char + companion creature (parallel)…');
+      const charMeshyP = falQueueRunBrowser('fal-ai/meshy/v6/image-to-3d', {
+        image_url: imgUrl, enable_rigging: true, enable_animation: true,
+        animation_action_id: 0, pose_mode: 'a-pose', enable_pbr: true
+      }, key, { onStatus: s => setProgress(55, `meshy char ${s}`), pollMs: 6000, maxMs: 600000 });
+      const companionP = (async () => {
+        const userCompanionDesc = (companionDesc || '').trim();
+        const baseCompanion = userCompanionDesc
+          ? `Create a CUSTOM small original COMPANION CREATURE: ${userCompanionDesc}. Mascot proportions, big expressive eyes, fluffy fur with crystalline tech details, cute friendly pose, painterly photoreal stylized 3D rendering.`
+          : `Look at this character. Create a CUSTOM small original COMPANION CREATURE matching this character's vibe and color palette — mascot proportions, big expressive eyes, fluffy fur with crystalline tech details, cute friendly pose, painterly photoreal stylized 3D rendering.`;
+        const companionPrompt = `${baseCompanion} **Output ONLY the creature, isolated, NO character, NO background, plain pure white seamless studio bg. Square 1:1. NO text, NO logos.**`;
+        const companionImg = await falQueueRunBrowser('fal-ai/flux-2/klein/9b/edit', {
+          prompt: companionPrompt, image_url: imgUrl,
+          image_size: 'square_hd', num_images: 1, output_format: 'png'
+        }, key, { onStatus: s => setProgress(50, `flux companion ${s}`), pollMs: 2500, maxMs: 120000 });
+        const companionImgUrl = companionImg?.images?.[0]?.url;
+        if (!companionImgUrl) throw new Error('no companion image url');
+        const companionMeshy = await falQueueRunBrowser('fal-ai/meshy/v6/image-to-3d', {
+          image_url: companionImgUrl, enable_rigging: false, enable_animation: false,
+          enable_pbr: true, should_texture: true, target_polycount: 30000
+        }, key, { onStatus: s => setProgress(80, `companion mesh ${s}`), pollMs: 6000, maxMs: 600000 });
+        return companionMeshy?.model_glb?.url;
+      })();
+      const [meshy, companionGlb] = await Promise.all([charMeshyP, companionP]);
+      const glb = (meshy.animation_glb || meshy.rigged_character_glb || meshy.model_glb)?.url;
+      if (!glb) throw new Error('no GLB url');
+      if (companionGlb && window.COMPANIONS) {
+        const cid = window.companionIdFromGlbUrl?.(glb);
+        if (cid) window.COMPANIONS[cid] = companionGlb;
+        window.COMPANIONS[name] = companionGlb;
+      }
+      setProgress(100, 'done ✓');
+      const accent = getComputedStyle(document.documentElement).getPropertyValue('--c1').trim() || '#38bdf8';
+      setOwnTileDone({ name, role, glb, imgUrl, accent });
+    } catch (e) {
+      setProgress(100, `error: ${e.message}`);
+      setOwnTileIdle();   // back to + tile so user can retry
+    } finally {
+      __customGenerating = false;
+      $('ownMinimize').classList.add('hidden');
+      $('ownGo').disabled = false; $('ownGo').textContent = 'GENERATE';
+    }
+  }
+
+  $('ownGo').addEventListener('click', () => {
+    const desc = $('ownPrompt').value.trim();
+    const companionDesc = $('ownCompanionPrompt').value.trim();
+    const name = ($('ownName').value || 'CUSTOM-1').trim().toUpperCase();
+    const role = ($('ownRole').value || 'CUSTOM OPERATIVE').trim().toUpperCase();
+    const key  = $('falKey').value.trim();
+    if (!desc) { $('ownPrompt').focus(); return; }
+    if (!key)  { $('falKey').focus(); $('falKey').parentElement.open = true; return; }
+    localStorage.setItem('FAL_KEY', key);
+    __customState.desc = desc;
+    __customState.companionDesc = companionDesc;
+    __customState.name = name;
+    __customState.role = role;
+    // Auto-close modal so the user can keep using the page; generation runs in background.
+    closeModal();
+    runGeneration({ desc, companionDesc, name, role, key });
+  });
+</script>
+
+<script>window.__FAL_JOBS__ = {"guilds": {"MASTER-CHIEF": {"name": "HALO · SPARTAN-117", "label": "HALO", "jobs": [{"title": "Defend Reach", "loc": "REQUIEM", "salary": "Spartan-II augment", "skills": ["MJOLNIR", "Energy Sword", "Cortana", "UNSCDF", "Spartan-II", "Forerunner"], "mission": "Hold the line on Reach against the Covenant glassing fleet.", "url": "https://en.wikipedia.org/wiki/Halo"}, {"title": "Halo Installation 04", "loc": "INSTALLATION 04", "salary": "Activation halt", "skills": ["Pillar of Autumn", "Flood", "Halo Ring", "343 Guilty Spark", "Plasma Pistol", "Warthog"], "mission": "Prevent activation of the Halo array. Detonate the reactor.", "url": "https://en.wikipedia.org/wiki/Halo"}, {"title": "Reclaim Earth", "loc": "NEW MOMBASA", "salary": "Tip of the Spear", "skills": ["ODST", "Scarab", "Brute Chieftain", "Battle Rifle", "Spartan Laser", "Mongoose"], "mission": "Push back the Prophet of Regret's invasion fleet.", "url": "https://en.wikipedia.org/wiki/Halo"}]}, "KRATOS": {"name": "GOD OF WAR · GOD SLAYER", "label": "GOD OF WAR", "jobs": [{"title": "Slay Ares", "loc": "GREECE", "salary": "Origin sin", "skills": ["Blades of Chaos", "Olympus", "Spartan Rage", "Pandora's Box", "Hades", "Athena"], "mission": "Avenge your family. End the God of War.", "url": "https://en.wikipedia.org/wiki/God_of_War"}, {"title": "Father of Atreus", "loc": "MIDGARD · LAKE OF NINE", "salary": "Norse arc", "skills": ["Leviathan Axe", "Atreus", "Mimir", "Jörmungandr", "Spartan Rage", "Brok"], "mission": "Carry your wife's ashes to the highest peak of all the realms.", "url": "https://en.wikipedia.org/wiki/God_of_War"}, {"title": "Ragnarök", "loc": "ASGARD", "salary": "End of all things", "skills": ["Draupnir Spear", "Tyr", "Freya", "Odin", "Thor", "Bifröst"], "mission": "Stop Odin. Free the realms. Embrace the prophecy.", "url": "https://en.wikipedia.org/wiki/God_of_War"}]}, "LINK": {"name": "LEGEND OF ZELDA · HERO OF TIME", "label": "LEGEND OF ZELDA", "jobs": [{"title": "Awaken in Hyrule", "loc": "HYRULE FIELD", "salary": "Calamity Ganon", "skills": ["Master Sword", "Hylian Shield", "Sheikah Slate", "Paraglider", "Champions", "Divine Beasts"], "mission": "Reclaim the Master Sword. Free the four Divine Beasts.", "url": "https://en.wikipedia.org/wiki/Legend_of_Zelda"}, {"title": "Tears of the Kingdom", "loc": "SKY ISLANDS", "salary": "Ultrahand", "skills": ["Recall", "Fuse", "Ascend", "Zelda", "Demon King", "Sky Islands"], "mission": "Reach the Demon King's seal beneath Hyrule Castle.", "url": "https://en.wikipedia.org/wiki/Legend_of_Zelda"}, {"title": "Ocarina of Time", "loc": "KOKIRI FOREST", "salary": "Hero awakens", "skills": ["Master Sword", "Navi", "Ocarina", "Triforce", "Ganondorf", "Temple of Time"], "mission": "Pull the Master Sword. Become the Hero of Time.", "url": "https://en.wikipedia.org/wiki/Legend_of_Zelda"}]}, "MARIO": {"name": "SUPER MARIO · SUPER PLUMBER", "label": "SUPER MARIO", "jobs": [{"title": "Rescue Peach", "loc": "WORLD 1-1", "salary": "Bowser's Castle", "skills": ["Fire Flower", "Super Mushroom", "Cape Feather", "Yoshi", "Goomba Stomp", "Star Power"], "mission": "Cross 8 worlds. Save the Princess from Bowser.", "url": "https://en.wikipedia.org/wiki/Super_Mario"}, {"title": "Galactic Hop", "loc": "GALAXY OBSERVATORY", "salary": "Starbits", "skills": ["Star Bits", "Luma", "Power Star", "Spin Attack", "Wall Jump", "Triple Jump"], "mission": "Collect 121 Power Stars across the cosmos.", "url": "https://en.wikipedia.org/wiki/Super_Mario"}, {"title": "Mushroom Kart Cup", "loc": "RAINBOW ROAD", "salary": "Lap 3 / Final", "skills": ["Banana Peel", "Blue Shell", "Star", "Lightning", "Bullet Bill", "Drift Boost"], "mission": "Take gold on the Special Cup against Bowser, Wario, DK.", "url": "https://en.wikipedia.org/wiki/Super_Mario"}]}, "SAMUS": {"name": "METROID · BOUNTY HUNTER", "label": "METROID", "jobs": [{"title": "Mother Brain", "loc": "BRINSTAR · ZEBES", "salary": "Original mission", "skills": ["Power Suit", "Morph Ball", "Screw Attack", "Charge Beam", "Missiles", "Varia Suit"], "mission": "Infiltrate the space pirate base. End Mother Brain.", "url": "https://en.wikipedia.org/wiki/Metroid"}, {"title": "Phazon Outbreak", "loc": "TALLON IV", "salary": "Prime contagion", "skills": ["Wave Beam", "Plasma Beam", "Power Bombs", "Grapple Beam", "Boost Ball", "Dark Suit"], "mission": "Quarantine the Phazon. Destroy Metroid Prime.", "url": "https://en.wikipedia.org/wiki/Metroid"}, {"title": "Dread Protocol", "loc": "PLANET ZDR", "salary": "EMMI sweeper", "skills": ["Phantom Cloak", "Flash Shift", "Storm Missile", "Cross Bombs", "Speed Booster", "Hyper Beam"], "mission": "Survive ZDR. Eliminate the EMMI units.", "url": "https://en.wikipedia.org/wiki/Metroid"}]}, "CLOUD": {"name": "FINAL FANTASY VII · SOLDIER 1ST", "label": "FINAL FANTASY VII", "jobs": [{"title": "Reactor 1 Bombing", "loc": "MIDGAR · SECTOR 7", "salary": "AVALANCHE op", "skills": ["Buster Sword", "Materia", "Limit Break", "Tifa", "Barrett", "Mako Energy"], "mission": "Plant the bomb. Destroy Mako Reactor No. 1. Escape Sector 7.", "url": "https://en.wikipedia.org/wiki/Final_Fantasy_VII"}, {"title": "Hunt Sephiroth", "loc": "NIBELHEIM", "salary": "One-Winged Angel", "skills": ["Omnislash", "Holy Materia", "Aerith", "Jenova", "Black Materia", "Lifestream"], "mission": "Pursue Sephiroth across the world. Stop Meteor.", "url": "https://en.wikipedia.org/wiki/Final_Fantasy_VII"}, {"title": "Northern Crater", "loc": "NORTHERN CRATER", "salary": "Final descent", "skills": ["Knights of Round", "Mime", "Ribbon", "Final Attack", "Cloud", "Vincent"], "mission": "Descend to the planet's core. End the Calamity.", "url": "https://en.wikipedia.org/wiki/Final_Fantasy_VII"}]}, "SNAKE": {"name": "METAL GEAR SOLID · FOXHOUND", "label": "METAL GEAR SOLID", "jobs": [{"title": "Shadow Moses", "loc": "ALASKAN BLACK SITE", "salary": "Tactical espionage", "skills": ["SOCOM", "FAMAS", "Stealth Camo", "Stinger", "C4", "Claymore"], "mission": "Infiltrate the nuclear weapons facility. Stop FOXHOUND.", "url": "https://en.wikipedia.org/wiki/Metal_Gear_Solid"}, {"title": "Tanker Incident", "loc": "HUDSON RIVER", "salary": "Sons of Liberty", "skills": ["M9 Tranq", "CQC", "Octocamo", "Codec", "Cardboard Box", "Gas Mask"], "mission": "Recover the photographs of Metal Gear RAY.", "url": "https://en.wikipedia.org/wiki/Metal_Gear_Solid"}, {"title": "Big Shell Op", "loc": "BIG SHELL FACILITY", "salary": "Patriot trigger", "skills": ["Codec", "Sneaking Suit", "Sniper Rifle", "Raiden", "Otacon", "Solidus"], "mission": "Disarm Arsenal Gear. Expose the Patriots.", "url": "https://en.wikipedia.org/wiki/Metal_Gear_Solid"}]}, "GERALT": {"name": "THE WITCHER 3 · WITCHER", "label": "THE WITCHER 3", "jobs": [{"title": "Find Ciri", "loc": "WHITE ORCHARD", "salary": "Wild Hunt arc", "skills": ["Silver Sword", "Steel Sword", "Igni Sign", "Quen Sign", "Witcher Senses", "Roach"], "mission": "Track Cirilla across the Continent. Outpace the Wild Hunt.", "url": "https://en.wikipedia.org/wiki/The_Witcher_3"}, {"title": "Bloody Baron", "loc": "VELEN", "salary": "Family curse", "skills": ["Axii Sign", "Botchling", "Ladies of the Wood", "Crones", "Whispering Hillock", "Anna"], "mission": "Solve the Baron's missing wife. Confront the crones of Crookback Bog.", "url": "https://en.wikipedia.org/wiki/The_Witcher_3"}, {"title": "Battle of Kaer Morhen", "loc": "KAER MORHEN", "salary": "Last stand", "skills": ["Yennefer", "Triss", "Vesemir", "Eredin", "Mutagens", "Witcher School"], "mission": "Hold the Witcher fortress against the Wild Hunt's general Eredin.", "url": "https://en.wikipedia.org/wiki/The_Witcher_3"}]}, "ALOY": {"name": "HORIZON ZERO DAWN · SEEKER", "label": "HORIZON ZERO DAWN", "jobs": [{"title": "All-Mother Mountain", "loc": "NORA SACRED LAND", "salary": "Proving day", "skills": ["Bow", "Tripcaster", "Rope Caster", "Focus", "Tearblaster", "Sharpshot Bow"], "mission": "Pass the Proving. Earn your name. Find your origin.", "url": "https://en.wikipedia.org/wiki/Horizon_Zero_Dawn"}, {"title": "Forbidden West", "loc": "LAS VEGAS RUINS", "salary": "Far Zenith", "skills": ["Spike Thrower", "Shredder Gauntlet", "Sylens", "Far Zenith", "Tenakth", "Hephaestus"], "mission": "Stabilize GAIA. Push west to find the missing subordinate functions.", "url": "https://en.wikipedia.org/wiki/Horizon_Zero_Dawn"}, {"title": "Burning Shores", "loc": "LOS ANGELES", "salary": "Horus reactivates", "skills": ["Specter Gauntlet", "Sylens-Lite", "Quen", "Londra", "Tideripper", "Stormbird"], "mission": "Stop Walter Londra from reactivating the Horus.", "url": "https://en.wikipedia.org/wiki/Horizon_Zero_Dawn"}]}, "LARA": {"name": "TOMB RAIDER · TOMB RAIDER", "label": "TOMB RAIDER", "jobs": [{"title": "Yamatai", "loc": "DRAGON'S TRIANGLE", "salary": "Survivor born", "skills": ["Bow", "Climbing Axe", "Pry Axe", "Endurance", "Solarii", "Sun Queen"], "mission": "Survive the storm. Escape the island. Save your crew.", "url": "https://en.wikipedia.org/wiki/Tomb_Raider"}, {"title": "Croft Manor", "loc": "ENGLAND", "salary": "Father's legacy", "skills": ["Akimbo Pistols", "Twin Pistols", "Manor", "Croft Family", "Trinity", "Atlas"], "mission": "Inherit Lord Richard Croft's research. Continue the work.", "url": "https://en.wikipedia.org/wiki/Tomb_Raider"}, {"title": "Shadow of the Tomb", "loc": "PERU · COZUMEL", "salary": "Apocalypse path", "skills": ["Pickaxe", "Rope Ascender", "Yaaxil", "Trinity", "Dr. Dominguez", "Sun Eclipse"], "mission": "Stop the Mayan apocalypse you triggered. Find Paititi.", "url": "https://en.wikipedia.org/wiki/Tomb_Raider"}]}, "ARTHUR": {"name": "RED DEAD REDEMPTION 2 · OUTLAW", "label": "RED DEAD REDEMPTION 2", "jobs": [{"title": "Blackwater Job", "loc": "BLACKWATER", "salary": "First-act gone-wrong", "skills": ["Cattleman Revolver", "Lancaster Repeater", "Dead Eye", "Boadicea", "Dutch", "Hosea"], "mission": "Recover from the Blackwater ferry job. Lay low in the Grizzlies.", "url": "https://en.wikipedia.org/wiki/Red_Dead_Redemption_2"}, {"title": "Camp Defense", "loc": "VAN DER LINDE CAMP", "salary": "Loyalty kept", "skills": ["Schofield", "Bow", "Lasso", "Charles", "Sadie", "Karen"], "mission": "Defend the camp against O'Driscolls and Pinkertons.", "url": "https://en.wikipedia.org/wiki/Red_Dead_Redemption_2"}, {"title": "Final Ride", "loc": "MOUNT HAGEN", "salary": "TB diagnosis", "skills": ["Mauser", "Bolt Action", "John Marston", "Micah", "Tuberculosis", "Last Honor"], "mission": "Get John out alive. Make peace with the man you became.", "url": "https://en.wikipedia.org/wiki/Red_Dead_Redemption_2"}]}, "JOEL": {"name": "THE LAST OF US · SURVIVOR", "label": "THE LAST OF US", "jobs": [{"title": "Boston Q.Z.", "loc": "BOSTON Q.Z.", "salary": "Smuggler run", "skills": ["Revolver", "Shiv", "9mm Pistol", "Tess", "FEDRA", "Fireflies"], "mission": "Smuggle the cargo across the wall to the Fireflies.", "url": "https://en.wikipedia.org/wiki/The_Last_of_Us"}, {"title": "Cross-Country", "loc": "WESTERN U.S.", "salary": "Find the Fireflies", "skills": ["Hunting Rifle", "Bow", "Molotov", "Bill", "Henry", "Sam"], "mission": "Escort Ellie across the infected ruins of America.", "url": "https://en.wikipedia.org/wiki/The_Last_of_Us"}, {"title": "Salt Lake Hospital", "loc": "ST. MARY'S HOSPITAL", "salary": "Father's choice", "skills": ["Shotgun", "Flamethrower", "Marlene", "Surgeons", "Ellie", "Jackson"], "mission": "Make the choice no one else could. Live with it.", "url": "https://en.wikipedia.org/wiki/The_Last_of_Us"}]}}};</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+
+// MASTER-CHIEF is the default first character; the scene loads it on boot.
+const CHAR_GLB = './assets/glb/master-chief.glb';
+window.__FLOOR_MAPS__ = {
+  basecolor: './assets/floor/basecolor.png',
+  normal:    './assets/floor/normal.png',
+  roughness: './assets/floor/roughness.png',
+  metalness: './assets/floor/metalness.png'
+};
+
+const canvas = document.getElementById('scene3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = null;
+
+// IBL: landscape HDR for warm natural reflections
+const pmrem = new THREE.PMREMGenerator(renderer);
+pmrem.compileEquirectangularShader();
+new RGBELoader()
+  .setCrossOrigin('anonymous')
+  .load('https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr', tex => {
+    const env = pmrem.fromEquirectangular(tex).texture;
+    scene.environment = env;
+    tex.dispose();
+    window.__bootMark?.('hdr');
+  }, undefined, () => window.__bootMark?.('hdr'));
+
+const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 100);
+camera.position.set(0, 1.5, 6.0);
+
+const controls = new OrbitControls(camera, canvas);
+// Layout: GAMING LEGENDS (3 cols left) + 3D (5 cols center) + ROSTER (4 cols right).
+// On mobile the 3D scene is fixed at the top — character + floor must fit cleanly.
+const _isMobile = () => window.matchMedia('(max-width: 1023px)').matches;
+let _azBaseline = 0, _polBaseline = Math.PI / 2, _needsBaseline = true;
+const _setTargetForViewport = () => {
+  if (_isMobile()) {
+    camera.position.set(0, 1.15, 5.6);
+    camera.fov = 30;
+    camera.updateProjectionMatrix();
+    controls.target.set(0, 1.05, 0);
+  } else {
+    camera.position.set(0, 1.25, 6.0);
+    camera.fov = 28;
+    camera.updateProjectionMatrix();
+    controls.target.set(0.25, 1.0, 0);
+  }
+  controls.update();
+  _needsBaseline = true;
+};
+_setTargetForViewport();
+window.addEventListener('resize', _setTargetForViewport);
+controls.enableZoom = false;
+controls.enablePan = false;
+controls.minPolarAngle = Math.PI * 0.32;
+controls.maxPolarAngle = Math.PI * 0.495;   // never quite reaches horizon → can't look under the floor
+controls.minAzimuthAngle = -Math.PI / 5;     // -36° → tighter side-to-side rotation
+controls.maxAzimuthAngle =  Math.PI / 5;     // +36°
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+
+// Lights — strong key + soft fill, tight shadow frustum for crisp contact shadow
+const key = new THREE.DirectionalLight(0xffffff, 1.2);
+key.position.set(1.8, 4.5, 2.0);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.bias = -0.0003;
+key.shadow.normalBias = 0.02;
+key.shadow.radius = 6;
+key.shadow.camera.near = 0.5;
+key.shadow.camera.far = 12;
+key.shadow.camera.left = -2;
+key.shadow.camera.right = 2;
+key.shadow.camera.top = 3;
+key.shadow.camera.bottom = -2;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xbae6fd, 0.6);
+rim.position.set(-2.5, 2.5, -2.5);
+scene.add(rim);
+const fill = new THREE.DirectionalLight(0xa5f3fc, 0.25);
+fill.position.set(0, 1, -3);
+scene.add(fill);
+const amb = new THREE.AmbientLight(0xffffff, 0.12);
+scene.add(amb);
+
+
+// Marble floor disc
+const texLoader = new THREE.TextureLoader();
+const floorMat = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  roughness: 0.18,
+  metalness: 0.0,
+  envMapIntensity: 0.7
+});
+const REPEAT = 1.6;
+const reload = () => {
+  const m = window.__FLOOR_MAPS__;
+  if (m.basecolor) {
+    texLoader.load(m.basecolor, t => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      t.repeat.set(REPEAT, REPEAT);
+      floorMat.map = t; floorMat.needsUpdate = true;
+      window.__bootMark?.('floor-basecolor');
+    }, undefined, () => window.__bootMark?.('floor-basecolor'));
+  } else { window.__bootMark?.('floor-basecolor'); }
+  if (m.normal) {
+    texLoader.load(m.normal, t => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(REPEAT, REPEAT);
+      floorMat.normalMap = t; floorMat.normalScale = new THREE.Vector2(0.5, 0.5); floorMat.needsUpdate = true;
+      window.__bootMark?.('floor-normal');
+    }, undefined, () => window.__bootMark?.('floor-normal'));
+  } else { window.__bootMark?.('floor-normal'); }
+  if (m.roughness) {
+    texLoader.load(m.roughness, t => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(REPEAT, REPEAT);
+      floorMat.roughnessMap = t; floorMat.needsUpdate = true;
+      window.__bootMark?.('floor-roughness');
+    }, undefined, () => window.__bootMark?.('floor-roughness'));
+  } else { window.__bootMark?.('floor-roughness'); }
+  if (m.metalness) {
+    texLoader.load(m.metalness, t => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(REPEAT, REPEAT);
+      floorMat.metalnessMap = t; floorMat.needsUpdate = true;
+      window.__bootMark?.('floor-metalness');
+    }, undefined, () => window.__bootMark?.('floor-metalness'));
+  } else { window.__bootMark?.('floor-metalness'); }
+};
+reload();
+window.__reloadFloor__ = reload;
+
+// Floor — soft-edged podium right under feet, double-sided so it's visible from below
+floorMat.transparent = true;
+floorMat.opacity = 0.50;
+floorMat.side = THREE.FrontSide;
+// Procedural radial alpha mask so the disc fades smoothly into the bg (no hard rim)
+{
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(256, 256, 60, 256, 256, 256);
+  grad.addColorStop(0,    'rgba(255,255,255,1)');
+  grad.addColorStop(0.55, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.80, 'rgba(255,255,255,0.55)');
+  grad.addColorStop(1.0,  'rgba(255,255,255,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 512, 512);
+  const alphaTex = new THREE.CanvasTexture(c);
+  alphaTex.colorSpace = THREE.NoColorSpace;
+  floorMat.alphaMap = alphaTex;
+  floorMat.needsUpdate = true;
+}
+// Floor disc — high-tessellation plane (cut into a circle via the alphaMap radial gradient)
+// so displacementMap actually shifts vertices and gives real depth
+const floorGeo = new THREE.PlaneGeometry(7, 7, 220, 220);
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = 0.06;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// Floor tint follows the active character's accent color
+function tintFloor(hex) {
+  if (!hex) return;
+  const target = new THREE.Color(hex);
+  // soften: blend with white so marble still reads as marble (not saturated paint)
+  target.lerp(new THREE.Color(0xffffff), 0.55);
+  const start = floorMat.color.clone();
+  const t0 = performance.now();
+  const dur = 700;
+  (function step(now) {
+    const k = Math.min(1, (now - t0) / dur);
+    floorMat.color.copy(start).lerp(target, k);
+    if (k < 1) requestAnimationFrame(step);
+  })(performance.now());
+}
+window.tintFloor = tintFloor;
+window.__floorMat__ = floorMat;
+
+// Per-character floor textures generated via PATINA. Each char has a folder
+// ./assets/floor/{lc-id}/{basecolor|normal|roughness|metalness}.png
+const FLOOR_SETS = new Set(['vexa-3','atlas-12','neon-5','sage-9','kairos-1','void-x','mira-8','echo-2','aero-4']);
+function _loadFloorTexture(url, slot, isColor = false) {
+  texLoader.load(url, t => {
+    if (isColor) t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    t.repeat.set(REPEAT, REPEAT);
+    const old = floorMat[slot];
+    floorMat[slot] = t;
+    if (slot === 'normalMap') floorMat.normalScale = new THREE.Vector2(0.5, 0.5);
+    floorMat.needsUpdate = true;
+    if (old) old.dispose();
+  });
+}
+function swapFloorTextures(charId) {
+  if (!charId) return;
+  const lc = String(charId).toLowerCase();
+  if (FLOOR_SETS.has(lc)) {
+    const base = `./assets/floor/${lc}`;
+    _loadFloorTexture(`${base}/basecolor.png`, 'map', true);
+    _loadFloorTexture(`${base}/normal.png`,    'normalMap', false);
+    _loadFloorTexture(`${base}/roughness.png`, 'roughnessMap', false);
+    _loadFloorTexture(`${base}/metalness.png`, 'metalnessMap', false);
+    // PATINA textures are already colored — clear any prior tint multiply
+    const start = floorMat.color.clone();
+    const t0 = performance.now();
+    (function fade(now) {
+      const k = Math.min(1, (now - t0) / 600);
+      floorMat.color.copy(start).lerp(new THREE.Color(0xffffff), k);
+      if (k < 1) requestAnimationFrame(fade);
+    })(performance.now());
+  } else {
+    // Fallback to flat default marble (FAL-08 / unknown ids)
+    _loadFloorTexture('./assets/floor/basecolor.png', 'map', true);
+    _loadFloorTexture('./assets/floor/normal.png',    'normalMap', false);
+    _loadFloorTexture('./assets/floor/roughness.png', 'roughnessMap', false);
+    _loadFloorTexture('./assets/floor/metalness.png', 'metalnessMap', false);
+  }
+}
+window.swapFloorTextures = swapFloorTextures;
+
+// Character + mirrored reflection — swappable with smooth transition.
+let mixer = null, mixerR = null;
+let currentRoot = null, currentReflection = null;
+// GLTF loader with Draco decoder (the local GLBs are draco-compressed)
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+const easeIn = (t) => t * t * t;
+
+function tween(durMs, onUpdate) {
+  return new Promise(resolve => {
+    const t0 = performance.now();
+    function frame(now) {
+      const t = Math.min(1, (now - t0) / durMs);
+      onUpdate(t);
+      if (t < 1) requestAnimationFrame(frame);
+      else resolve();
+    }
+    requestAnimationFrame(frame);
+  });
+}
+
+// Dispose a Three.js root. `disposeGeometry` should be FALSE for reflection clones
+// since they share geometries with their original root → would double-dispose otherwise.
+function disposeRoot(r, disposeGeometry = true) {
+  if (!r) return;
+  scene.remove(r);
+  r.traverse(o => {
+    if (o.isMesh) {
+      if (disposeGeometry && o.geometry) o.geometry.dispose();
+      if (o.material) {
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => {
+          for (const k of ['map','normalMap','roughnessMap','metalnessMap','emissiveMap','aoMap']) {
+            if (m[k]) m[k].dispose?.();
+          }
+          m.dispose?.();
+        });
+      }
+    }
+  });
+}
+
+let isSwapping = false;
+let __slideDir = 1; // 1 = next-from-right, -1 = prev-from-left
+const CHARACTER_X_OFFSETS = {
+  'neon-5': 0.35,
+  'echo-2': 0.35,
+};
+function characterXOffsetFromGlbUrl(glbUrl) {
+  const id = (glbUrl || '').match(/\/([^\/]+)\.glb(?:\?|$)/i)?.[1];
+  return CHARACTER_X_OFFSETS[id] || 0;
+}
+async function swapCharacter(glbUrl, dir = 1) {
+  if (!glbUrl || isSwapping) return;
+  isSwapping = true;
+  __slideDir = dir;
+  // 1) Slide-out + fade current
+  const old = currentRoot, oldR = currentReflection;
+  await tween(380, t => {
+    const k = 1 - easeIn(t);
+    const slide = -__slideDir * 1.2 * (1 - k); // exits opposite of incoming side
+    if (old) {
+      old.traverse(o => { if (o.isMesh && o.material) o.material.opacity = k; });
+      old.position.x = (old.userData.__baseX ?? old.position.x) + slide;
+    }
+    if (oldR) {
+      oldR.traverse(o => { if (o.isMesh && o.material) o.material.opacity = 0.55 * k; });
+      oldR.position.x = (oldR.userData.__baseX ?? oldR.position.x) + slide;
+    }
+  });
+  if (old) disposeRoot(old, true);            // owns its geometries
+  if (oldR) disposeRoot(oldR, false);          // shares geometries w/ root → don't dispose
+  mixer = mixerR = null;
+  currentRoot = currentReflection = null;
+
+  // 2) Load + add new sliding in from __slideDir side
+  let gltf;
+  try {
+    gltf = await loader.loadAsync(glbUrl);
+  } catch (e) {
+    console.warn('[swapCharacter] GLB missing, skipping 3D render:', glbUrl);
+    window.__bootMark?.('char-glb');
+    window.__bootMark?.('bg-video');
+    return;
+  }
+  window.__bootMark?.('char-glb');
+  const root = gltf.scene;
+  const box = new THREE.Box3().setFromObject(root);
+  root.position.y -= box.min.y;
+  const baseX = characterXOffsetFromGlbUrl(glbUrl);
+  root.position.x = baseX;
+  root.userData.__baseX = baseX;
+  root.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      if (o.material) {
+        // ensure transparent for fade
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => { m.transparent = true; m.opacity = 0; m.envMapIntensity = 1.05; });
+      }
+    }
+  });
+  scene.add(root);
+  if (gltf.animations?.length) {
+    mixer = new THREE.AnimationMixer(root);
+    const a = mixer.clipAction(gltf.animations[0]);
+    a.play();
+    window.__currentAction = a;
+  }
+  // mirrored reflection — match the companion path: mirror the whole root across
+  // floor y=0 so GLBs with a centered/non-foot pivot render below the character.
+  const reflection = SkeletonUtils.clone(root);
+  reflection.position.x = baseX;
+  reflection.position.y = -root.position.y;
+  reflection.scale.y = -1;
+  reflection.userData.__baseX = baseX;
+  reflection.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = false;
+      const mats = Array.isArray(o.material) ? [o.material] : [o.material];
+      const mat = (Array.isArray(o.material) ? o.material[0] : o.material).clone();
+      mat.transparent = true; mat.opacity = 0; mat.side = THREE.BackSide;
+      mat.depthWrite = false; mat.envMapIntensity = 0.6;
+      o.material = mat; o.renderOrder = -1;
+    }
+  });
+  scene.add(reflection);
+  if (gltf.animations?.length) {
+    mixerR = new THREE.AnimationMixer(reflection);
+    mixerR.clipAction(gltf.animations[0]).play();
+  }
+  currentRoot = root; currentReflection = reflection;
+
+  // 3) Slide-in + fade new
+  await tween(520, t => {
+    const k = easeOut(t);
+    const slide = __slideDir * 1.2 * (1 - k); // enters from __slideDir side
+    root.traverse(o => { if (o.isMesh && o.material) o.material.opacity = k; });
+    reflection.traverse(o => { if (o.isMesh && o.material) o.material.opacity = 0.65 * k; });
+    root.position.x = baseX + slide;
+    reflection.position.x = baseX + slide;
+  });
+  root.position.x = baseX;
+  reflection.position.x = baseX;
+  // Restore root materials to opaque so PBR depth sort doesn't ghost-double
+  root.traverse(o => {
+    if (o.isMesh && o.material) {
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach(m => { m.transparent = false; m.opacity = 1; m.depthWrite = true; m.needsUpdate = true; });
+    }
+  });
+  isSwapping = false;
+}
+
+// === Companion creatures — one per character, loaded on demand ===
+const COMPANIONS = {
+  'master-chief':  './assets/companions/master-chief.glb',
+  'kratos':        './assets/companions/kratos.glb',
+  'link':          './assets/companions/link.glb',
+  'mario':         './assets/companions/mario.glb',
+  'samus':         './assets/companions/samus.glb',
+  'cloud':         './assets/companions/cloud.glb',
+  'snake':         './assets/companions/snake.glb',
+  'geralt':        './assets/companions/geralt.glb',
+  'aloy':          './assets/companions/aloy.glb',
+  'lara':          './assets/companions/lara.glb',
+  'arthur':        './assets/companions/arthur.glb',
+  'joel':          './assets/companions/joel.glb',
+};
+const companionCache = {};       // id -> { root, reflection }
+let activeCompanionId = null;
+
+async function loadCompanion(id) {
+  if (companionCache[id]) return companionCache[id];
+  const url = COMPANIONS[id];
+  if (!url) return null;
+  const gltf = await loader.loadAsync(url);
+  const root = gltf.scene;
+  // Normalize so the creature is ~0.45m tall
+  const box = new THREE.Box3().setFromObject(root);
+  const size = new THREE.Vector3(); box.getSize(size);
+  const scale = 0.45 / Math.max(0.01, size.y);
+  root.scale.setScalar(scale);
+  const box2 = new THREE.Box3().setFromObject(root);
+  root.position.y -= box2.min.y;
+  root.position.x = -0.42;     // to character's left
+  root.position.z =  0.45;     // slightly in front
+  root.rotation.y = 0.55;      // angled toward the character
+  root.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      if (o.material) {
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => { m.envMapIntensity = 1.0; });
+      }
+    }
+  });
+  root.visible = false;
+  scene.add(root);
+  // mirrored reflection — refl.y = -root.y so the mirror is anchored at the floor (y=0)
+  const refl = root.clone(true);
+  refl.position.set(root.position.x, -root.position.y, root.position.z);
+  refl.scale.set(root.scale.x, -root.scale.y, root.scale.z);
+  refl.rotation.copy(root.rotation);
+  refl.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = false;
+      const mat = (Array.isArray(o.material) ? o.material[0] : o.material).clone();
+      mat.transparent = true; mat.opacity = 0.55; mat.side = THREE.BackSide;
+      mat.depthWrite = false; mat.envMapIntensity = 0.6;
+      o.material = mat; o.renderOrder = -1;
+    }
+  });
+  refl.visible = false;
+  scene.add(refl);
+  return companionCache[id] = { root, reflection: refl };
+}
+
+function _setMatOpacity(root, op, opaqueWhenDone = false) {
+  root.traverse(o => {
+    if (o.isMesh && o.material) {
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach(m => {
+        if (opaqueWhenDone) {
+          m.transparent = false;
+          m.opacity = 1;
+          m.depthWrite = true;
+          m.needsUpdate = true;
+        } else {
+          m.transparent = true;
+          m.opacity = op;
+        }
+      });
+    }
+  });
+}
+async function setActiveCompanion(id) {
+  const dir = __slideDir || 1;
+  const slideAmt = 0.9;
+  // Phase 1 — slide-out + fade the previous companion
+  if (activeCompanionId && companionCache[activeCompanionId]) {
+    const old = companionCache[activeCompanionId];
+    const oldBaseX  = old.root.userData.__baseX  ?? old.root.position.x;
+    const oldBaseRX = old.reflection.userData.__baseX ?? old.reflection.position.x;
+    old.root.userData.__baseX = oldBaseX;
+    old.reflection.userData.__baseX = oldBaseRX;
+    await tween(360, t => {
+      const k = 1 - (t * t * t);                  // easeIn (1 → 0)
+      const dx = -dir * slideAmt * (1 - k);       // exits opposite of incoming side
+      old.root.position.x = oldBaseX + dx;
+      old.reflection.position.x = oldBaseRX + dx;
+      _setMatOpacity(old.root, k);
+      _setMatOpacity(old.reflection, 0.45 * k);
+    });
+    old.root.visible = false;
+    old.reflection.visible = false;
+    old.root.position.x = oldBaseX;               // restore for next time
+    old.reflection.position.x = oldBaseRX;
+  }
+  activeCompanionId = null;
+  if (!id || !COMPANIONS[id]) return;
+  // Phase 2 — load + slide-in + fade in the new companion
+  const p = await loadCompanion(id);
+  if (!p) return;
+  const baseX  = p.root.userData.__baseX  ?? p.root.position.x;
+  const baseRX = p.reflection.userData.__baseX ?? p.reflection.position.x;
+  p.root.userData.__baseX = baseX;
+  p.reflection.userData.__baseX = baseRX;
+  // Position offscreen on incoming side, then slide in
+  p.root.position.x = baseX + dir * slideAmt;
+  p.reflection.position.x = baseRX + dir * slideAmt;
+  _setMatOpacity(p.root, 0);
+  _setMatOpacity(p.reflection, 0);
+  p.root.visible = true;
+  p.reflection.visible = true;
+  activeCompanionId = id;                            // set early so render loop tracks it
+  await tween(480, t => {
+    const k = 1 - Math.pow(1 - t, 3);              // easeOut
+    const dx = dir * slideAmt * (1 - k);
+    p.root.position.x = baseX + dx;
+    p.reflection.position.x = baseRX + dx;
+    _setMatOpacity(p.root, k);
+    _setMatOpacity(p.reflection, 0.45 * k);
+  });
+  // Snap to base position cleanly
+  p.root.position.x = baseX;
+  p.reflection.position.x = baseRX;
+  _setMatOpacity(p.root, 1, /*opaqueWhenDone*/ true);   // restore depth-write to kill ghost-doubling
+  _setMatOpacity(p.reflection, 0.45);                   // reflection stays translucent (it's a mirror)
+}
+
+function companionIdFromGlbUrl(url) {
+  if (!url) return null;
+  const m = url.match(/\/([^\/]+)\.glb(?:\?|$)/i);
+  return m ? m[1] : null;
+}
+window.setActiveCompanion = setActiveCompanion;
+window.companionIdFromGlbUrl = companionIdFromGlbUrl;
+window.COMPANIONS = COMPANIONS;
+
+// Initial load
+swapCharacter(CHAR_GLB);
+window.swapCharacter = swapCharacter;
+window.updateStats = updateStats;          // exposed so the create-your-own modal can refresh
+
+// Background crossfade between two <video> elements
+const bgA = document.getElementById('bgvid-a');
+const bgB = document.getElementById('bgvid-b');
+let bgFront = bgA, bgBack = bgB;
+// Track current source on each layer (avoid relying on currentSrc which lags)
+bgA.dataset.src = bgA.querySelector('source')?.src || '';
+bgB.dataset.src = '';
+
+// Notify the boot loader once the first bg video is ready to play
+const _markBgReady = () => window.__bootMark?.('bg-video');
+bgA.addEventListener('loadeddata', _markBgReady, { once: true });
+bgA.addEventListener('canplay',     _markBgReady, { once: true });
+bgA.addEventListener('error',       _markBgReady, { once: true });
+
+function _swapBgLayers() {
+  bgBack.classList.remove('bgvid-off'); bgBack.classList.add('bgvid-on');
+  bgFront.classList.remove('bgvid-on'); bgFront.classList.add('bgvid-off');
+  [bgFront, bgBack] = [bgBack, bgFront];
+}
+
+function swapBg(src) {
+  if (!src) return;
+  if (bgFront.dataset.src === src) return; // already showing
+  const isVideo = /\.mp4(\?|$)/i.test(src);
+  // reset back layer
+  bgBack.innerHTML = '';
+  bgBack.style.background = '';
+  bgBack.removeAttribute('src');
+  bgBack.dataset.src = src;
+
+  if (isVideo) {
+    bgBack.innerHTML = `<source src="${src}" type="video/mp4">`;
+    bgBack.load();
+    bgBack.play().catch(()=>{});
+    _swapBgLayers();        // crossfade NOW — video keeps loading underneath
+  } else {
+    bgBack.style.background = `center/cover url('${src}')`;
+    _swapBgLayers();
+  }
+}
+
+// Preload all 10 bg videos at boot so they're cached when characters get clicked.
+// Browsers don't reliably support <link rel="preload" as="video">, so we use a hidden
+// video element with preload="auto" — the browser starts buffering immediately.
+(function preloadBgVideos(){
+  const cache = document.createElement('div');
+  cache.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;visibility:hidden';
+  document.querySelectorAll('#roster .char[data-bgsrc]').forEach(c => {
+    const src = c.dataset.bgsrc;
+    if (!src || !/\.mp4(\?|$)/i.test(src)) return;
+    const v = document.createElement('video');
+    v.preload = 'auto'; v.muted = true; v.src = src;
+    cache.appendChild(v);
+  });
+  document.body.appendChild(cache);
+})();
+
+// Wire up roster cards: index-based slide direction + glb swap + bg crossfade
+const __cards = Array.from(document.querySelectorAll('#roster .char[data-glb]'));
+let __activeIdx = __cards.findIndex(c => c.classList.contains('active'));
+if (__activeIdx < 0) __activeIdx = -1;
+// ── Per-character data binding (now driven by guild jobs data) ─────────────
+const fmt = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+function $id(id) { return document.getElementById(id); }
+function setText(id, v) {
+  const el = $id(id);
+  if (!el) return;
+  if (el.textContent !== String(v)) {
+    el.textContent = v;
+    el.classList.remove('stat-tick'); void el.offsetWidth; el.classList.add('stat-tick');
+  }
+}
+
+// Guild → real fal.ai careers data (inlined so it works under file://)
+const FAL_JOBS = window.__FAL_JOBS__ || {};
+
+// Compute one-time aggregates per guild
+function buildGuildAggregates() {
+  const out = {};
+  for (const [gid, g] of Object.entries(FAL_JOBS.guilds || {})) {
+    const jobs = g.jobs || [];
+    // Aggregate top 6 skills by frequency
+    const tally = {};
+    for (const j of jobs) for (const sk of (j.skills||[])) tally[sk] = (tally[sk]||0)+1;
+    const topSkills = Object.entries(tally).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>x[0]);
+    // Locations
+    const locs = [...new Set(jobs.map(j=>j.loc))];
+    const primaryLoc = locs[0] || "—";
+    const otherLocs = locs.slice(1).join(" · ") || "—";
+    // Seniority: rough heuristic on title
+    const lvls = jobs.map(j => {
+      const t = j.title.toLowerCase();
+      if (t.includes("staff")) return 50;
+      if (t.includes("senior")) return 44;
+      if (t.includes("manager") || t.includes("lead")) return 46;
+      return 38;
+    });
+    const avgLv = Math.round(lvls.reduce((a,b)=>a+b,0)/Math.max(1,lvls.length));
+    const headline = jobs[0]?.title || "—";
+    out[gid] = {
+      label: g.label,
+      name: g.name,
+      jobs,
+      openSeats: jobs.length,
+      uniqueTitles: new Set(jobs.map(j=>j.title)).size,
+      topSkills,
+      primaryLoc,
+      otherLocs,
+      avgLv,
+      headline,
+    };
+  }
+  return out;
+}
+const GUILDS = buildGuildAggregates();
+
+// Global "fal-wide" stats — invariant across char swaps, drift independently
+const STAT_MAX = { lv: 50, hp: 612, cy: 18 };
+
+function setBarWidth(id, pct) {
+  const el = $id(id); if (!el) return;
+  const w = Math.max(8, Math.min(100, pct));
+  el.style.width = `${w.toFixed(1)}%`;
+  // All bars: same soft white → very-light-blue gradient (overrides bar-purple/bar-cyan)
+  el.style.background = "linear-gradient(90deg, rgba(255,255,255,.95), var(--c2))";
+}
+
+// Smoothly tween a number-displaying element from its current value to target.
+// `fmt` formats the float into the on-screen string (e.g. n => `${Math.round(n)} / 612`).
+function tweenStat(id, target, fmt = (n) => String(Math.round(n)), durMs = 1200) {
+  const el = $id(id); if (!el) return;
+  const cur = parseFloat((el.textContent || "0").replace(/,/g, "")) || 0;
+  const t0 = performance.now();
+  (function step(now) {
+    const t = Math.min(1, (now - t0) / durMs);
+    const k = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const v = cur + (target - cur) * k;
+    el.textContent = fmt(v);
+    if (t < 1) requestAnimationFrame(step);
+  })(performance.now());
+}
+
+// Once the user has seen a guild, clicking back to OPERATOR (no-guild) doesn't reset.
+let __everShownGuild = false;
+
+function updateStats(card) {
+  let stats = {};
+  try { stats = JSON.parse(card.dataset.stats || "{}"); } catch (e) {}
+  if (stats.eddy != null) tweenStat("eddyVal", stats.eddy, n => `₹ ${fmtNum(Math.round(n))}`);
+  if (Array.isArray(stats.carry) && stats.carry.length === 2) {
+    const [c, max] = stats.carry;
+    const pct = (c / max) * 100;
+    setText("carryVal", `${c} / ${max} · ${pct.toFixed(1)}%`);
+    setBarWidth("carryBar", pct);
+  }
+  if (stats.tasks != null) tweenStat("tasksVal", stats.tasks, n => Math.round(n));
+  if (stats.sysver) setText("sysverVal", stats.sysver);
+}
+
+// ── Independent staggered drifts — each stat ticks on its own ~10s timer ──
+const fmtNum = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+let __liveAura = 247;
+
+function scheduleDrift(fn, baseMs, jitterMs) {
+  (function next() {
+    setTimeout(() => { try { fn(); } catch(e){} next(); }, baseMs + Math.random() * jitterMs);
+  })();
+}
+
+// Pick a value in [lo,hi] guaranteed at least `minStep` away from `current`.
+function pickFar(current, lo, hi, minStep) {
+  let v, tries = 0;
+  do {
+    v = lo + Math.floor(Math.random() * (hi - lo + 1));
+    tries++;
+  } while (Math.abs(v - current) < minStep && tries < 20);
+  return v;
+}
+// Track current TARGET values so each new pick is meaningfully different.
+const __cur = { lv: 50, hp: 612, cy: 18, aura: 247 };
+
+// Faster cadence — each value drifts every ~2-6s, staggered
+// All ranges cap at (max - 1) — the bar is never at full
+scheduleDrift(() => {
+  __cur.lv = pickFar(__cur.lv, 44, STAT_MAX.lv - 1, 2);
+  tweenStat("lvText", __cur.lv, n => Math.round(n));
+  setBarWidth("lvBar", (__cur.lv / STAT_MAX.lv) * 100);
+}, 2200, 3000);
+
+scheduleDrift(() => {
+  __cur.hp = pickFar(__cur.hp, 560, STAT_MAX.hp - 1, 25);
+  tweenStat("hpText", __cur.hp, n => `${Math.round(n)} / ${STAT_MAX.hp}`);
+  setBarWidth("hpBar", (__cur.hp / STAT_MAX.hp) * 100);
+}, 2800, 3000);
+
+scheduleDrift(() => {
+  __cur.cy = pickFar(__cur.cy, 14, STAT_MAX.cy - 1, 2);
+  tweenStat("cyberText", __cur.cy, n => `${Math.round(n)} / ${STAT_MAX.cy}`);
+  setBarWidth("cyberBar", (__cur.cy / STAT_MAX.cy) * 100);
+}, 3000, 3000);
+
+scheduleDrift(() => {
+  __cur.aura = pickFar(__cur.aura, 220, 280, 20);
+  tweenStat("auraVal", __cur.aura, n => Math.round(n));
+}, 3600, 3000);
+
+// MOMENTUM: STATIC at 1,348 (no drift)
+setText("momentumVal", "1,348");
+
+// GPS COORDS — continuous smooth wander around fal HQ in SF (every frame)
+{
+  const latEl = $id("coordLat"), lonEl = $id("coordLon");
+  if (latEl && lonEl) {
+    (function gpsLoop() {
+      const t = performance.now() / 1000;
+      // Layered sines = pseudo-organic drift, never repeating exactly
+      const lat = 37.7749 + Math.sin(t * 0.31) * 0.0028 + Math.sin(t * 0.83) * 0.0009 + Math.sin(t * 1.7) * 0.0003;
+      const lon = -122.4194 + Math.cos(t * 0.27) * 0.0030 + Math.sin(t * 0.91) * 0.0011 + Math.cos(t * 1.5) * 0.0004;
+      latEl.textContent = `${lat.toFixed(4)}° N`;
+      lonEl.textContent = `${Math.abs(lon).toFixed(4)}° W`;
+      requestAnimationFrame(gpsLoop);
+    })();
+  }
+}
+
+function renderRolesStrip(g) {
+  const strip = $id("rolesStrip");
+  if (!strip) return;
+  strip.innerHTML = g.jobs.map(j => `
+    <a href="${j.url}" target="_blank" rel="noopener" class="role-card">
+      <div class="role-title">${j.title}</div>
+      <div class="role-loc">${j.loc}</div>
+      <div class="role-skills">${(j.skills||[]).slice(0,3).join(" · ")}</div>
+      <div class="role-apply">APPLY →</div>
+    </a>
+  `).join("");
+}
+
+// ── Per-character Y offset (height) — saved to localStorage, applied on swap ─
+const Y_KEY = "fal-pyrrha-yoffsets-v1";
+function loadYOffsets() {
+  try { return JSON.parse(localStorage.getItem(Y_KEY) || "{}"); } catch (e) { return {}; }
+}
+function saveYOffsets(map) {
+  localStorage.setItem(Y_KEY, JSON.stringify(map));
+}
+let __yOffsets = loadYOffsets();
+let __activeId = null;
+
+// hook swapCharacter so it applies the saved Y offset after the load
+// and switches the companion creature to match the active character
+const __origSwap = swapCharacter;
+window.swapCharacter = swapCharacter = async function(glbUrl, dir = 1) {
+  await __origSwap(glbUrl, dir);
+  applyYOffset();
+  const companionId = companionIdFromGlbUrl(glbUrl);
+  setActiveCompanion(companionId);
+};
+// Initial load happened before this hook was installed — trigger the companion manually for the intro character
+setActiveCompanion('master-chief');
+
+function applyYOffset() {
+  if (!currentRoot || !__activeId) return;
+  const off = __yOffsets[__activeId] ?? 0;
+  // re-anchor: the load code did `root.position.y -= box.min.y` (feet at 0); we add user offset
+  const box = new THREE.Box3().setFromObject(currentRoot);
+  const baseY = currentRoot.position.y; // already feet-aligned
+  currentRoot.position.y = baseY - (currentRoot.userData.__lastY || 0) + off;
+  const reflOff = __setup[__activeId]?.reflYoff || 0;
+  if (currentReflection) currentReflection.position.y = -currentRoot.position.y + reflOff;
+  currentRoot.userData.__lastY = off;
+}
+
+// Trigger the global "transition lines" sweep effect
+function flashTransition() {
+  const tfx = document.getElementById('transitionFx');
+  const tfl = document.getElementById('transitionFlash');
+  if (tfx) {
+    tfx.classList.remove('tfx-on');
+    void tfx.offsetWidth;                  // force reflow to restart animations
+    tfx.classList.add('tfx-on');
+    setTimeout(() => tfx.classList.remove('tfx-on'), 950);
+  }
+  if (tfl) {
+    tfl.classList.add('tfx-on');
+    setTimeout(() => tfl.classList.remove('tfx-on'), 220);
+  }
+}
+window.flashTransition = flashTransition;
+
+__cards.forEach((card, idx) => {
+  card.addEventListener('click', () => {
+    if (idx === __activeIdx) return;
+    if (isSwapping) return;                                  // block rapid double-clicks during a swap
+    const dir = idx > __activeIdx ? 1 : -1;
+    __activeIdx = idx;
+    __activeId = card.dataset.id;
+    flashTransition();                                        // global sweep effect
+    __cards.forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    const glb = card.dataset.glb;
+    const bg = card.dataset.bgsrc;
+    const accent = card.dataset.accent;
+    if (glb) swapCharacter(glb, dir);
+    if (bg) swapBg(bg);
+    if (typeof swapFloorTextures === "function") swapFloorTextures(__activeId);
+    if (accent) tintFloor(accent);
+    // Apply per-char floor params after textures load (slight delay so map is set)
+    setTimeout(() => { if (typeof applyFloorParams === "function") applyFloorParams(__activeId); }, 350);
+    updateStats(card);
+    if (typeof applyPalette === "function") applyPalette(__activeId);
+    if (typeof refreshSetupPanel === "function") refreshSetupPanel(); else refreshHeightSlider();
+  });
+});
+
+// Initial: tint floor + populate stats + apply saved palette
+{
+  const init = __activeIdx >= 0 ? __cards[__activeIdx] : null;
+  if (init) {
+    __activeId = init.dataset.id;
+    if (init.dataset.accent) setTimeout(() => tintFloor(init.dataset.accent), 800);
+    // Initial state: FAL-08 is on screen — leave the OPEN ROLES panel in its empty
+    // "pick a job" state until the user actually clicks a character below.
+    updateStats({ dataset: {} });
+    setTimeout(() => {
+      if (typeof applyPalette === "function") applyPalette(__activeId);
+      if (typeof refreshSetupPanel === "function") refreshSetupPanel();
+    }, 200);
+    const tryApply = () => {
+      if (currentRoot) applyYOffset();
+      else setTimeout(tryApply, 200);
+    };
+    setTimeout(tryApply, 800);
+  } else {
+    // MASTER-CHIEF is the default opening character.
+    __activeId = "MASTER-CHIEF";
+    updateStats({ dataset: {} });
+    setTimeout(() => {
+      if (typeof applyPalette === "function") applyPalette(__activeId);
+      if (typeof refreshSetupPanel === "function") refreshSetupPanel();
+    }, 200);
+    const tryApply = () => {
+      if (currentRoot) applyYOffset();
+      else setTimeout(tryApply, 200);
+    };
+    setTimeout(tryApply, 800);
+  }
+}
+
+// ── SETUP PANEL — per-character: y offset, companion y offset, idle, 3 colors. Save → localStorage ─
+const SETUP_KEY = "fal-setup-v5";   // bumped to force-load BAKED_SETUP defaults (per-char yoff, palettes, floor params)
+const IDLE_PRESETS = [
+  {id:0,name:"Idle (default)"},
+  {id:2,name:"Alert"},
+  {id:11,name:"Idle 02"},
+  {id:12,name:"Idle 03"},
+  {id:36,name:"Confused (scratch)"},
+  {id:48,name:"Mirror viewing"},
+  {id:243,name:"Idle 3"},
+  {id:244,name:"Idle 4"},
+  {id:245,name:"Idle 5"},
+  {id:246,name:"Idle 6"},
+  {id:247,name:"Idle 7"},
+  {id:248,name:"Idle 8"},
+  {id:249,name:"Idle 9"},
+  {id:250,name:"Idle 10"},
+];
+// Per-character default 3-color palettes — [c1 deep, c2 light, c3 muted/text]
+const CHAR_PALETTES = {
+  "MASTER-CHIEF":["#5B8C5A", "#3D5A3D", "#C4A84D"], // Halo,
+  "KRATOS":      ["#C0392B", "#7D7D7D", "#F5D76E"], // God of War,
+  "LINK":        ["#27AE60", "#8B7355", "#3498DB"], // Legend of Zelda,
+  "MARIO":       ["#E74C3C", "#3498DB", "#F1C40F"], // Super Mario,
+  "SAMUS":       ["#E67E22", "#C0392B", "#27AE60"], // Metroid,
+  "CLOUD":       ["#2C3E50", "#8E44AD", "#F39C12"], // Final Fantasy VII,
+  "SNAKE":       ["#2C3E50", "#5D6D7E", "#95A5A6"], // Metal Gear Solid,
+  "GERALT":      ["#7F8C8D", "#C0392B", "#2C3E50"], // The Witcher 3,
+  "ALOY":        ["#E74C3C", "#D4A76A", "#2ECC71"], // Horizon Zero Dawn,
+  "LARA":        ["#5D4E37", "#2ECC71", "#95A5A6"], // Tomb Raider,
+  "ARTHUR":      ["#8B4513", "#D4A76A", "#4A6741"], // Red Dead Redemption 2,
+  "JOEL":        ["#5D4E37", "#2ECC71", "#8B7355"], // The Last of Us
+};
+const DEFAULT_PALETTE = ["#0c4a6e", "#7dd3fc", "#475569"];   // fal fallback
+const DEFAULT_IDLE = 0;
+
+// Baked-in defaults — what each character should look like out of the box.
+// localStorage edits override these per-user.
+const BAKED_SETUP = {
+  "MASTER-CHIEF":{ yoff:-0.10, companionYoff:-0.04, idle:0, palette:["#5B8C5A","#3D5A3D","#C4A84D"], floor:{roughness:0.18,metalness:0.05,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.00}, reflYoff:-0.04 },
+  "KRATOS":      { yoff:-0.11, companionYoff:-0.02, idle:0, palette:["#C0392B","#7D7D7D","#F5D76E"], floor:{roughness:0.22,metalness:0.11,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.05}, reflYoff:-0.02 },
+  "LINK":        { yoff:-0.12, companionYoff:0.00, idle:0, palette:["#27AE60","#8B7355","#3498DB"], floor:{roughness:0.26,metalness:0.17,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.10}, reflYoff:0.00 },
+  "MARIO":       { yoff:-0.13, companionYoff:0.02, idle:0, palette:["#E74C3C","#3498DB","#F1C40F"], floor:{roughness:0.30,metalness:0.05,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.15}, reflYoff:0.02 },
+  "SAMUS":       { yoff:-0.14, companionYoff:0.04, idle:0, palette:["#E67E22","#C0392B","#27AE60"], floor:{roughness:0.18,metalness:0.11,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.00}, reflYoff:0.04 },
+  "CLOUD":       { yoff:-0.15, companionYoff:-0.04, idle:0, palette:["#2C3E50","#8E44AD","#F39C12"], floor:{roughness:0.22,metalness:0.17,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.05}, reflYoff:0.06 },
+  "SNAKE":       { yoff:-0.16, companionYoff:-0.02, idle:0, palette:["#2C3E50","#5D6D7E","#95A5A6"], floor:{roughness:0.26,metalness:0.05,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.10}, reflYoff:-0.04 },
+  "GERALT":      { yoff:-0.17, companionYoff:0.00, idle:0, palette:["#7F8C8D","#C0392B","#2C3E50"], floor:{roughness:0.30,metalness:0.11,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.15}, reflYoff:-0.02 },
+  "ALOY":        { yoff:-0.10, companionYoff:0.02, idle:0, palette:["#E74C3C","#D4A76A","#2ECC71"], floor:{roughness:0.18,metalness:0.17,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.00}, reflYoff:0.00 },
+  "LARA":        { yoff:-0.11, companionYoff:0.04, idle:0, palette:["#5D4E37","#2ECC71","#95A5A6"], floor:{roughness:0.22,metalness:0.05,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.05}, reflYoff:0.02 },
+  "ARTHUR":      { yoff:-0.12, companionYoff:-0.04, idle:0, palette:["#8B4513","#D4A76A","#4A6741"], floor:{roughness:0.26,metalness:0.11,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.10}, reflYoff:0.04 },
+  "JOEL":        { yoff:-0.13, companionYoff:-0.02, idle:0, palette:["#5D4E37","#2ECC71","#8B7355"], floor:{roughness:0.30,metalness:0.17,normalScale:0.6,repeat:1.8,opacity:0.55,displacement:0.15}, reflYoff:0.06 }
+};
+function loadSetup() {
+  try {
+    const raw = localStorage.getItem(SETUP_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return JSON.parse(JSON.stringify(BAKED_SETUP));
+}
+function saveSetup(s) { localStorage.setItem(SETUP_KEY, JSON.stringify(s)); }
+let __setup = loadSetup();
+const __DEV__ = new URLSearchParams(location.search).has('dev');
+// Migrate old yoffsets if present
+{
+  const oldY = JSON.parse(localStorage.getItem("fal-pyrrha-yoffsets-v1") || "{}");
+  for (const [k,v] of Object.entries(oldY)) {
+    if (!__setup[k]) __setup[k] = {};
+    if (__setup[k].yoff == null) __setup[k].yoff = v;
+  }
+  __yOffsets = Object.fromEntries(Object.entries(__setup).map(([k,v]) => [k, v.yoff ?? 0]));
+}
+
+const DEFAULT_FLOOR = { roughness: 0.18, metalness: 0.0, normalScale: 0.5, repeat: 1.6, opacity: 0.5, displacement: 0.0 };
+function getCharSetup(id) {
+  const charDefault = CHAR_PALETTES[id] || DEFAULT_PALETTE;
+  if (!__setup[id]) __setup[id] = { yoff: 0, companionYoff: 0, idle: DEFAULT_IDLE, palette: [...charDefault], floor: { ...DEFAULT_FLOOR } };
+  if (__setup[id].palette == null)  __setup[id].palette = [...charDefault];
+  if (__setup[id].idle == null)     __setup[id].idle = DEFAULT_IDLE;
+  if (__setup[id].yoff == null)     __setup[id].yoff = 0;
+  if (__setup[id].companionYoff == null) __setup[id].companionYoff = 0;
+  if (__setup[id].reflYoff == null) __setup[id].reflYoff = 0;
+  if (__setup[id].floor == null)    __setup[id].floor = { ...DEFAULT_FLOOR };
+  for (const k of Object.keys(DEFAULT_FLOOR)) {
+    if (__setup[id].floor[k] == null) __setup[id].floor[k] = DEFAULT_FLOOR[k];
+  }
+  return __setup[id];
+}
+function applyFloorParams(id) {
+  if (typeof window.__floorMat__ === "undefined") return;
+  const fm = window.__floorMat__;
+  const f = getCharSetup(id || __activeId).floor;
+  fm.roughness = f.roughness;
+  fm.metalness = f.metalness;
+  if (fm.normalScale) fm.normalScale.set(f.normalScale, f.normalScale);
+  fm.opacity = f.opacity;
+  fm.transparent = true;
+  // Displacement — re-uses the basecolor's brightness as a height map (free depth)
+  // and the normalMap as fallback if no basecolor available yet.
+  fm.displacementMap = fm.map || fm.normalMap || null;
+  fm.displacementScale = f.displacement || 0;
+  fm.displacementBias = -((f.displacement || 0) * 0.5);   // center the displacement around 0
+  fm.needsUpdate = true;
+  // texture repeat (apply to all maps if present)
+  for (const slot of ['map','normalMap','roughnessMap','metalnessMap']) {
+    const tex = fm[slot];
+    if (tex && tex.repeat) {
+      tex.repeat.set(f.repeat, f.repeat);
+      tex.needsUpdate = true;
+    }
+  }
+}
+window.applyFloorParams = applyFloorParams;
+// Apply Y offset to the active companion (called from the setup slider)
+function applyCompanionYOffset() {
+  if (!activeCompanionId) return;
+  const p = companionCache[activeCompanionId];
+  if (!p) return;
+  const off = (__setup[__activeId]?.companionYoff) || 0;
+  p.root.userData.__baseY = p.root.userData.__baseY ?? p.root.position.y;
+  const targetY = p.root.userData.__baseY + off;
+  p.root.position.y = targetY;
+  // Mirror across floor: reflection sits at -y so the mirror is always anchored at y=0
+  p.reflection.position.y = -targetY;
+}
+window.applyCompanionYOffset = applyCompanionYOffset;
+function applyPalette(id) {
+  const s = getCharSetup(id);
+  const r = document.documentElement.style;
+  r.setProperty("--c1", s.palette[0]);
+  r.setProperty("--c2", s.palette[1]);
+  r.setProperty("--c3", s.palette[2]);
+}
+
+// SETUP PANEL UI
+const setupPanel = document.createElement("div");
+setupPanel.id = "setupPanel";
+setupPanel.innerHTML = `
+  <div class="sp-head">
+    <div class="sp-title">SETUP</div>
+    <button id="spClose" title="hide">×</button>
+  </div>
+  <div class="sp-name" id="spCharName">—</div>
+
+  <label class="sp-lbl">Y OFFSET — CHARACTER</label>
+  <input type="range" id="spYSlider" min="-1" max="1" step="0.01" value="0" />
+  <div class="sp-row"><span id="spYVal" class="sp-mono">0.00</span></div>
+
+  <label class="sp-lbl">Y OFFSET — COMPANION</label>
+  <input type="range" id="spCompanionYSlider" min="-0.5" max="1" step="0.01" value="0" />
+  <div class="sp-row"><span id="spCompanionYVal" class="sp-mono">0.00</span></div>
+
+  <label class="sp-lbl">Y OFFSET — REFLECTION</label>
+  <input type="range" id="spReflYSlider" min="-2" max="2" step="0.02" value="0" />
+  <div class="sp-row"><span id="spReflYVal" class="sp-mono">0.00</span></div>
+
+  <label class="sp-lbl">IDLE ANIMATION</label>
+  <select id="spIdle"></select>
+
+  <label class="sp-lbl">PALETTE (3 colors)</label>
+  <div class="sp-colors">
+    <div class="sp-cwrap"><input type="color" id="spC1" /><button class="sp-eye" data-target="spC1" title="pick from screen">⊙</button></div>
+    <div class="sp-cwrap"><input type="color" id="spC2" /><button class="sp-eye" data-target="spC2" title="pick from screen">⊙</button></div>
+    <div class="sp-cwrap"><input type="color" id="spC3" /><button class="sp-eye" data-target="spC3" title="pick from screen">⊙</button></div>
+  </div>
+
+  <div class="sp-section">
+    <div class="sp-section-title">FLOOR · MATERIAL</div>
+    <label class="sp-lbl">ROUGHNESS <span id="spFlRouVal" class="sp-mono">0.18</span></label>
+    <input type="range" id="spFlRou" min="0" max="1" step="0.01" value="0.18"/>
+    <label class="sp-lbl">METALNESS <span id="spFlMetVal" class="sp-mono">0.00</span></label>
+    <input type="range" id="spFlMet" min="0" max="1" step="0.01" value="0.00"/>
+    <label class="sp-lbl">NORMAL SCALE <span id="spFlNrmVal" class="sp-mono">0.50</span></label>
+    <input type="range" id="spFlNrm" min="0" max="2" step="0.05" value="0.50"/>
+    <label class="sp-lbl">TILE REPEAT <span id="spFlRepVal" class="sp-mono">1.60</span></label>
+    <input type="range" id="spFlRep" min="0.5" max="6" step="0.1" value="1.60"/>
+    <label class="sp-lbl">OPACITY <span id="spFlOpaVal" class="sp-mono">0.50</span></label>
+    <input type="range" id="spFlOpa" min="0" max="1" step="0.01" value="0.50"/>
+    <label class="sp-lbl">DISPLACEMENT <span id="spFlDspVal" class="sp-mono">0.00</span></label>
+    <input type="range" id="spFlDsp" min="0" max="0.4" step="0.005" value="0"/>
+  </div>
+
+  <div class="sp-row sp-actions">
+    <button id="spReset">RESET CHAR</button>
+    <button id="spCopy">EXPORT JSON</button>
+  </div>
+`;
+setupPanel.style.cssText = `
+  position:fixed; bottom:18px; right:18px; z-index:60;
+  background:rgba(255,255,255,.94); backdrop-filter:blur(14px);
+  border:1px solid #bae6fd; border-radius:14px; padding:14px 16px;
+  box-shadow:0 12px 32px rgba(56,189,248,.18);
+  font-family:'Chivo Mono',monospace; font-size:11px; color:#0f172a;
+  min-width:240px; max-width:280px;
+`;
+const spStyle = document.createElement("style");
+spStyle.textContent = `
+  #setupPanel .sp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  #setupPanel .sp-title{font-size:9.5px;letter-spacing:.16em;color:#94a3b8}
+  #setupPanel .sp-name{font-weight:600;color:#38bdf8;font-size:13px;margin-bottom:10px}
+  #setupPanel .sp-lbl{display:block;font-size:9px;letter-spacing:.14em;color:#94a3b8;margin-top:8px;margin-bottom:3px}
+  #setupPanel input[type=range]{width:100%;accent-color:#38bdf8}
+  #setupPanel select{width:100%;padding:4px 6px;border:1px solid #bae6fd;border-radius:6px;background:#fff;color:#0f172a;font-family:inherit;font-size:10.5px;cursor:pointer}
+  #setupPanel .sp-colors{display:flex;gap:6px;margin-top:2px}
+  #setupPanel .sp-cwrap{flex:1;display:flex;gap:2px}
+  #setupPanel input[type=color]{flex:1;height:24px;border:1px solid #bae6fd;border-radius:6px 0 0 6px;background:#fff;padding:1px;cursor:pointer;min-width:0}
+  #setupPanel .sp-eye{flex:0 0 auto;width:22px;height:24px;padding:0;border:1px solid #bae6fd;border-left:none;border-radius:0 6px 6px 0;background:#fff;color:#075985;font-size:13px;cursor:pointer;line-height:1}
+  #setupPanel .sp-eye:hover{background:#e0f2fe}
+  #setupPanel .sp-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px}
+  #setupPanel .sp-actions{margin-top:12px;gap:6px}
+  #setupPanel button{font-family:inherit;font-size:10px;padding:5px 10px;border:1px solid #bae6fd;border-radius:6px;background:#e0f2fe;color:#075985;cursor:pointer;flex:1}
+  #setupPanel button:hover{background:#bae6fd}
+  #setupPanel #spClose{padding:0 8px;flex:0 0 auto;background:transparent;border:none;font-size:18px;color:#94a3b8}
+  #setupPanel .sp-mono{font-size:10px;color:#475569}
+  #setupPanel .sp-section{border-top:1px solid #e0f2fe;margin-top:10px;padding-top:8px}
+  #setupPanel .sp-section-title{font-size:9.5px;letter-spacing:.16em;color:#0369a1;font-weight:600;margin-bottom:4px}
+  #setupPanel{max-height:88vh;overflow-y:auto}
+  #setupPanel::-webkit-scrollbar{width:4px}
+  #setupPanel::-webkit-scrollbar-thumb{background:#bae6fd;border-radius:4px}
+`;
+document.head.appendChild(spStyle);
+document.body.appendChild(setupPanel);
+if (!__DEV__) setupPanel.style.display = "none";
+
+// Populate idle <select>
+const spIdle = $id("spIdle");
+for (const p of IDLE_PRESETS) {
+  const opt = document.createElement("option");
+  opt.value = p.id; opt.textContent = `${p.id} — ${p.name}`;
+  spIdle.appendChild(opt);
+}
+
+const spYSlider = $id("spYSlider"), spYVal = $id("spYVal");
+const spCompanionYSlider = $id("spCompanionYSlider"), spCompanionYVal = $id("spCompanionYVal");
+const spReflYSlider = $id("spReflYSlider"), spReflYVal = $id("spReflYVal");
+const spC1 = $id("spC1"), spC2 = $id("spC2"), spC3 = $id("spC3");
+const spFlRou = $id("spFlRou"), spFlRouVal = $id("spFlRouVal");
+const spFlMet = $id("spFlMet"), spFlMetVal = $id("spFlMetVal");
+const spFlNrm = $id("spFlNrm"), spFlNrmVal = $id("spFlNrmVal");
+const spFlRep = $id("spFlRep"), spFlRepVal = $id("spFlRepVal");
+const spFlOpa = $id("spFlOpa"), spFlOpaVal = $id("spFlOpaVal");
+const spFlDsp = $id("spFlDsp"), spFlDspVal = $id("spFlDspVal");
+
+function refreshSetupPanel() {
+  $id("spCharName").textContent = __activeId || "—";
+  if (!__activeId) return;
+  const s = getCharSetup(__activeId);
+  spYSlider.value = s.yoff; spYVal.textContent = s.yoff.toFixed(2);
+  spCompanionYSlider.value = s.companionYoff; spCompanionYVal.textContent = s.companionYoff.toFixed(2);
+  spReflYSlider.value = s.reflYoff; spReflYVal.textContent = s.reflYoff.toFixed(2);
+  spIdle.value = s.idle;
+  spC1.value = s.palette[0]; spC2.value = s.palette[1]; spC3.value = s.palette[2];
+  spFlRou.value = s.floor.roughness;   spFlRouVal.textContent = s.floor.roughness.toFixed(2);
+  spFlMet.value = s.floor.metalness;   spFlMetVal.textContent = s.floor.metalness.toFixed(2);
+  spFlNrm.value = s.floor.normalScale; spFlNrmVal.textContent = s.floor.normalScale.toFixed(2);
+  spFlRep.value = s.floor.repeat;      spFlRepVal.textContent = s.floor.repeat.toFixed(2);
+  spFlOpa.value = s.floor.opacity;     spFlOpaVal.textContent = s.floor.opacity.toFixed(2);
+  spFlDsp.value = s.floor.displacement || 0; spFlDspVal.textContent = (s.floor.displacement || 0).toFixed(3);
+  applyPalette(__activeId);
+  applyCompanionYOffset();
+  applyFloorParams(__activeId);
+}
+
+// Hook the existing height-tuner into setup panel (back-compat with applyYOffset)
+function refreshHeightSlider() { refreshSetupPanel(); }
+
+spYSlider.addEventListener("input", () => {
+  if (!__activeId) return;
+  const v = parseFloat(spYSlider.value);
+  getCharSetup(__activeId).yoff = v;
+  __yOffsets[__activeId] = v;
+  saveSetup(__setup);
+  spYVal.textContent = v.toFixed(2);
+  applyYOffset();
+});
+spCompanionYSlider.addEventListener("input", () => {
+  if (!__activeId) return;
+  const v = parseFloat(spCompanionYSlider.value);
+  getCharSetup(__activeId).companionYoff = v;
+  saveSetup(__setup);
+  spCompanionYVal.textContent = v.toFixed(2);
+  applyCompanionYOffset();
+});
+spReflYSlider.addEventListener("input", () => {
+  if (!__activeId) return;
+  const v = parseFloat(spReflYSlider.value);
+  getCharSetup(__activeId).reflYoff = v;
+  saveSetup(__setup);
+  spReflYVal.textContent = v.toFixed(2);
+  applyYOffset();   // re-applies reflection Y from new value
+});
+function _onFloorChange(key, slider, label, decimals = 2) {
+  slider.addEventListener("input", () => {
+    if (!__activeId) return;
+    const v = parseFloat(slider.value);
+    getCharSetup(__activeId).floor[key] = v;
+    saveSetup(__setup);
+    label.textContent = v.toFixed(decimals);
+    applyFloorParams(__activeId);
+  });
+}
+_onFloorChange("roughness",    spFlRou, spFlRouVal);
+_onFloorChange("metalness",    spFlMet, spFlMetVal);
+_onFloorChange("normalScale",  spFlNrm, spFlNrmVal);
+_onFloorChange("repeat",       spFlRep, spFlRepVal);
+_onFloorChange("opacity",      spFlOpa, spFlOpaVal);
+_onFloorChange("displacement", spFlDsp, spFlDspVal, 3);
+spIdle.addEventListener("change", () => {
+  if (!__activeId) return;
+  getCharSetup(__activeId).idle = parseInt(spIdle.value, 10);
+  saveSetup(__setup);
+});
+function onColorChange() {
+  if (!__activeId) return;
+  const s = getCharSetup(__activeId);
+  s.palette = [spC1.value, spC2.value, spC3.value];
+  saveSetup(__setup);
+  applyPalette(__activeId);
+}
+spC1.addEventListener("input", onColorChange);
+spC2.addEventListener("input", onColorChange);
+spC3.addEventListener("input", onColorChange);
+
+$id("spReset").addEventListener("click", () => {
+  if (!__activeId) return;
+  const charDefault = CHAR_PALETTES[__activeId] || DEFAULT_PALETTE;
+  __setup[__activeId] = { yoff: 0, companionYoff: 0, reflYoff: 0, idle: DEFAULT_IDLE, palette: [...charDefault], floor: { ...DEFAULT_FLOOR } };
+  __yOffsets[__activeId] = 0;
+  saveSetup(__setup);
+  refreshSetupPanel();
+  applyYOffset();
+  applyCompanionYOffset();
+  applyFloorParams(__activeId);
+});
+$id("spCopy").addEventListener("click", async () => {
+  const txt = JSON.stringify(__setup, null, 2);
+  try {
+    await navigator.clipboard.writeText(txt);
+    const b = $id("spCopy"); const old = b.textContent;
+    b.textContent = "COPIED ✓"; setTimeout(() => b.textContent = old, 1400);
+  } catch { console.log("SETUP:", txt); alert(txt); }
+});
+$id("spClose").addEventListener("click", () => {
+  setupPanel.style.display = "none";
+  setupToggle.style.display = "flex";
+});
+
+// EyeDropper API — pick color from anywhere on screen
+document.querySelectorAll(".sp-eye").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    if (!("EyeDropper" in window)) {
+      alert("EyeDropper non supporté par ce navigateur (utilise Chrome/Edge).");
+      return;
+    }
+    try {
+      const result = await new window.EyeDropper().open();
+      const target = $id(btn.dataset.target);
+      target.value = result.sRGBHex;
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+    } catch (e) { /* user cancelled */ }
+  });
+});
+
+// Floating toggle button — re-opens the SETUP panel after close
+const setupToggle = document.createElement("button");
+setupToggle.id = "setupToggle";
+setupToggle.textContent = "SETUP";
+setupToggle.style.cssText = `
+  position:fixed; bottom:18px; right:18px; z-index:60; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(255,255,255,.94); backdrop-filter:blur(10px);
+  border:1px solid #bae6fd; border-radius:10px; padding:8px 14px;
+  font-family:'Chivo Mono',monospace; font-size:10px; letter-spacing:.16em;
+  color:#075985; cursor:pointer; box-shadow:0 8px 22px rgba(56,189,248,.18);
+`;
+setupToggle.addEventListener("click", () => {
+  setupPanel.style.display = "block";
+  setupToggle.style.display = "none";
+});
+document.body.appendChild(setupToggle);
+if (!__DEV__) setupToggle.style.display = "none";
+
+function resize() {
+  const r = canvas.getBoundingClientRect();
+  const w = Math.max(1, r.width), h = Math.max(1, r.height);
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas);
+resize();
+
+const clock = new THREE.Clock();
+const bgvidA = document.getElementById('bgvid-a');
+const bgvidB = document.getElementById('bgvid-b');
+const MAX_AZ = Math.PI / 5;            // matches controls.min/maxAzimuthAngle
+const PARALLAX_X = 32;                 // px of translation at extreme rotation
+const PARALLAX_Y = 15;
+const clamp1 = v => Math.max(-1, Math.min(1, v));
+let parX = 0, parY = 0;
+function tick() {
+  const dt = clock.getDelta();
+  if (mixer) mixer.update(dt);
+  if (mixerR) mixerR.update(dt);
+  // Companion idle breathing — gentle scale + Y bob on the active companion
+  if (activeCompanionId && companionCache[activeCompanionId]) {
+    const companion = companionCache[activeCompanionId];
+    const tt = performance.now() / 1000;
+    const breath = 1 + Math.sin(tt * 1.3) * 0.025;          // ±2.5% scale
+    const bob   = Math.sin(tt * 1.05 + 0.4) * 0.025;        // small vertical bob
+    if (companion.root.userData.__baseScale == null) companion.root.userData.__baseScale = companion.root.scale.x;
+    if (companion.reflection.userData.__baseScale == null) companion.reflection.userData.__baseScale = Math.abs(companion.reflection.scale.x);
+    if (companion.root.userData.__baseY == null) companion.root.userData.__baseY = companion.root.position.y;
+    const bs = companion.root.userData.__baseScale;
+    const off = (__setup[__activeId]?.companionYoff) || 0;
+    companion.root.scale.setScalar(bs * breath);
+    companion.reflection.scale.set(bs * breath, -bs * breath, bs * breath);
+    // Mirror across the floor — reflection follows root, anchored at floor (y=0)
+    const targetY = companion.root.userData.__baseY + off + bob;
+    const reflOff = (typeof __setup !== 'undefined' && __setup[__activeId]?.reflYoff) || 0;
+    companion.root.position.y = targetY;
+    companion.reflection.position.y = -targetY + reflOff;
+  }
+  controls.update();
+  // bg video parallax — capture the actual rest angle on first tick (after controls settle), then move relative to it
+  if (_needsBaseline) {
+    _azBaseline  = controls.getAzimuthalAngle();
+    _polBaseline = controls.getPolarAngle();
+    parX = parY = 0;
+    _needsBaseline = false;
+  }
+  const az  = clamp1((controls.getAzimuthalAngle() - _azBaseline) / MAX_AZ);
+  const pol = clamp1((controls.getPolarAngle()    - _polBaseline) / (Math.PI/4));
+  const tx = -az * PARALLAX_X;       // classic parallax: opposite to camera direction
+  const ty = -pol * PARALLAX_Y;
+  parX += (tx - parX) * 0.14;
+  parY += (ty - parY) * 0.14;
+  const t = `translate(${parX.toFixed(2)}px, ${parY.toFixed(2)}px) scale(1.4)`;
+  if (bgvidA) bgvidA.style.transform = t;
+  if (bgvidB) bgvidB.style.transform = t;
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+
+<!-- LEFT panel — live sparkline + drifting counters -->
+<script>
+(function(){
+  const N = 36;
+  let series = Array.from({length:N}, () => 27000 + Math.random()*3500);
+  let prev = series[series.length-1];
+  const lineEl = document.getElementById('sparkLine');
+  const areaEl = document.getElementById('sparkArea');
+  const dotEl  = document.getElementById('sparkDot');
+  const tpsEl  = document.getElementById('liveTps');
+  const arrowEl = document.getElementById('tpsArrow');
+  const deltaEl = document.getElementById('tpsDelta');
+  const W = 200, H = 50;
+  function buildPath() {
+    if (!lineEl) return;
+    const min = Math.min(...series), max = Math.max(...series);
+    const span = Math.max(1, max - min);
+    const xs = (i) => (i/(N-1)) * W;
+    const ys = (v) => H - 4 - ((v - min) / span) * (H - 8);
+    let d = '';
+    for (let i = 0; i < N; i++) {
+      const x = xs(i), y = ys(series[i]);
+      d += (i === 0 ? `M${x.toFixed(1)},${y.toFixed(1)}` : ` L${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    lineEl.setAttribute('d', d);
+    areaEl.setAttribute('d', d + ` L${W},${H} L0,${H} Z`);
+    const lastX = xs(N-1), lastY = ys(series[N-1]);
+    dotEl.setAttribute('cx', lastX.toFixed(1));
+    dotEl.setAttribute('cy', lastY.toFixed(1));
+  }
+  function fmtNum(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function tick() {
+    // smooth random walk constrained to ~2400-3200
+    const last = series[series.length-1];
+    const drift = (Math.random() - 0.5) * 2200;
+    const meanPull = (29000 - last) * 0.06;
+    let next = last + drift + meanPull;
+    next = Math.max(24000, Math.min(32000, next));
+    series.push(next); series.shift();
+    buildPath();
+    if (tpsEl) tpsEl.textContent = fmtNum(next);
+    const delta = ((next - prev) / prev) * 100;
+    if (arrowEl) arrowEl.textContent = delta >= 0 ? '▲' : '▼';
+    if (arrowEl) arrowEl.style.color = delta >= 0 ? '#10b981' : '#ef4444';
+    if (deltaEl) deltaEl.textContent = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
+    prev = next;
+  }
+  buildPath();
+  setInterval(tick, 700);
+
+  // Live BATTLES / 24H counter — increments smoothly
+  const reqEl = document.getElementById('reqCount');
+  let reqVal = 8472910;
+  setInterval(() => {
+    reqVal += Math.floor(Math.random() * 80) + 10;
+    if (reqEl) reqEl.textContent = fmtNum(reqVal);
+  }, 280);
+
+  // LOOT CACHE — drifts
+  const gpuEl = document.getElementById('gpuActive');
+  let gpu = 21480;
+  setInterval(() => {
+    gpu += Math.round((Math.random() - 0.5) * 120);
+    gpu = Math.max(20800, Math.min(22400, gpu));
+    if (gpuEl) gpuEl.textContent = fmtNum(gpu);
+  }, 1800);
+
+  // Active PoP rotates between regions; connections drift
+  const popList = [
+    { name: 'SFO', coord: '37.77° N · 122.41° W' },
+    { name: 'NYC', coord: '40.71° N · 74.00° W'  },
+    { name: 'FRA', coord: '50.11° N ·  8.68° E'  },
+    { name: 'TYO', coord: '35.69° N · 139.69° E' },
+    { name: 'SYD', coord: '33.87° S · 151.21° E' },
+  ];
+  let popIdx = 0;
+  let popConn = 143920;
+  const popNameEl = document.getElementById('popName');
+  const popConnEl = document.getElementById('popConn');
+  setInterval(() => {
+    popIdx = (popIdx + 1) % popList.length;
+    if (popNameEl) popNameEl.textContent = `${popList[popIdx].name} · ${popList[popIdx].coord.split(' · ')[0]}`;
+  }, 4200);
+  setInterval(() => {
+    popConn += Math.round((Math.random() - 0.4) * 900);
+    popConn = Math.max(80000, Math.min(220000, popConn));
+    if (popConnEl) popConnEl.textContent = fmtNum(popConn);
+  }, 700);
+
+  // Latency rows — drift each value
+  const latBase = { sfo: 76, nyc: 96, fra: 110, tyo: 144, syd: 160 };
+  const latMax = 200;
+  setInterval(() => {
+    for (const k of Object.keys(latBase)) {
+      const drift = Math.round((Math.random() - 0.5) * 10);
+      latBase[k] = Math.max(50, Math.min(190, latBase[k] + drift));
+      const v = latBase[k];
+      const valEl = document.querySelector(`[data-lat-val="${k}"]`);
+      const barEl = document.querySelector(`[data-lat-bar="${k}"]`);
+      if (valEl) valEl.textContent = v;
+      if (barEl) barEl.style.width = `${(v / latMax) * 100}%`;
+    }
+  }, 1400);
+})();
+</script>
+</body>
+</html>

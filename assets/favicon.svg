@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27AE60"/>
+      <stop offset="55%" stop-color="#3498DB"/>
+      <stop offset="100%" stop-color="#8E44AD"/>
+    </linearGradient>
+  </defs>
+  <!-- shield silhouette -->
+  <path d="M32 4 L56 12 V30 C56 46 44 56 32 60 C20 56 8 46 8 30 V12 Z"
+        fill="url(#g)" stroke="#0f172a" stroke-width="2"/>
+  <!-- controller body -->
+  <rect x="16" y="26" width="32" height="16" rx="7" fill="#0f172a"/>
+  <!-- d-pad -->
+  <rect x="20" y="32" width="8" height="3" fill="#fff"/>
+  <rect x="22.5" y="29.5" width="3" height="8" fill="#fff"/>
+  <!-- buttons -->
+  <circle cx="40" cy="31" r="2" fill="#E74C3C"/>
+  <circle cx="44" cy="34" r="2" fill="#F1C40F"/>
+  <circle cx="40" cy="37" r="2" fill="#27AE60"/>
+  <circle cx="36" cy="34" r="2" fill="#3498DB"/>
+</svg>

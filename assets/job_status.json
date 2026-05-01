@@ -1,0 +1,194 @@
+{
+  "environments/link": {
+    "status": "ERROR",
+    "request_id": "019de17d-efb8-7ce3-86f2-6f90730488d2",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Could not fetch result"
+  },
+  "environments/kratos": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-efbc-7d42-99ad-0ef1ad9e253d",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 823KB"
+  },
+  "environments/master-chief": {
+    "status": "ERROR",
+    "request_id": "019de17d-efd3-7dd1-962d-4b7437996b47",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Could not fetch result"
+  },
+  "environments/samus": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-efe6-7fd2-9b80-4da62548e771",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 1208KB"
+  },
+  "environments/cloud": {
+    "status": "ERROR",
+    "request_id": "019de17d-f05c-7153-a82b-546b820db221",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Could not fetch result"
+  },
+  "environments/snake": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-f086-7e92-9ec5-1273c65ec24b",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 898KB"
+  },
+  "meshy/samus": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f107-7550-99f6-167a7b024c59",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "meshy/kratos": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f10a-73f1-95f0-86602ec0f4ab",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "meshy/link": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f133-7292-b519-6e1e450d14aa",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "patina/kratos": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f141-7cf2-a594-9d8b70142806",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "meshy/master-chief": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f15a-77a0-8644-fe5a7c0bc314",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "patina/samus": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f182-7452-bc7d-44d2f81fe5c8",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "environments/arthur": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-f1b9-77e0-ae09-005e2f875587",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 1166KB"
+  },
+  "meshy/cloud": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f1b8-7010-a9f8-cf1472ff6220",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "patina/cloud": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f1ce-7501-82d4-68ecee472ed7",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "environments/aloy": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-f1e8-7ea0-8c11-69e5e3839c4a",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 1165KB"
+  },
+  "meshy/snake": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f22e-7ef0-8daa-fee020fc3dd3",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "environments/lara": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-f258-7a21-bcaf-bcbca6569230",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 1260KB"
+  },
+  "patina/snake": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f277-7a83-9411-e3a9065beae7",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "environments/geralt": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-f284-7c31-abcc-07fb2dbe74ed",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 913KB"
+  },
+  "meshy/arthur": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f2e6-7ac1-9414-51649a6de897",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "environments/mario": {
+    "status": "ERROR",
+    "request_id": "019de17d-f325-7bb2-acd2-f51dcf321a23",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Could not fetch result"
+  },
+  "patina/arthur": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f332-7c13-98dd-fb52522b2f78",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "meshy/aloy": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f35d-74f1-b591-9e8b09723df6",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "patina/aloy": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f380-7a31-b3df-a72269126d21",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "patina/lara": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f39e-7831-8a82-79b1a057b7e6",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "meshy/lara": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f3b9-7781-9ae4-1755ea3e135d",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "environments/joel": {
+    "status": "DOWNLOADED",
+    "request_id": "019de17d-f3c4-7b62-8832-2423d3ab3c1c",
+    "endpoint": "fal-ai/flux-2-max",
+    "detail": "Downloaded 1234KB"
+  },
+  "meshy/mario": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f42a-7c22-bda2-7b638d3b20eb",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "patina/geralt": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f47f-7251-b502-c41a05c604de",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "patina/master-chief": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f4cd-71d1-8eb1-489ee039d130",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "patina/link": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f4ed-7752-aa67-abda31502f27",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "meshy/joel": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f52c-73c1-afdb-2b0f17f07492",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  },
+  "patina/joel": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f55c-7b63-8b4e-4460dfefcd5f",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "patina/mario": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-f870-7350-9a5d-ed66062f1191",
+    "endpoint": "fal-ai/patina/material/extract"
+  },
+  "meshy/geralt": {
+    "status": "UNKNOWN",
+    "request_id": "019de17d-fb71-78b3-b958-9abee7012b55",
+    "endpoint": "fal-ai/meshy/v6/image-to-3d"
+  }
+}

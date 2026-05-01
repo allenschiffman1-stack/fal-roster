@@ -1,0 +1,161 @@
+{
+  "master-chief": {
+    "name": "Master Chief",
+    "file": "master-chief.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#5B8C5A",
+      "#3D5A3D",
+      "#C4A84D"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "kratos": {
+    "name": "Kratos",
+    "file": "kratos.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#C0392B",
+      "#7D7D7D",
+      "#F5D76E"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "link": {
+    "name": "Link",
+    "file": "link.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#27AE60",
+      "#8B7355",
+      "#3498DB"
+    ],
+    "quality": "good",
+    "tpose": false,
+    "grayBg": false,
+    "notes": "Content policy retry - standing pose, white bg"
+  },
+  "samus": {
+    "name": "Samus Aran",
+    "file": "samus.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#E67E22",
+      "#C0392B",
+      "#27AE60"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "cloud": {
+    "name": "Cloud Strife",
+    "file": "cloud.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#2C3E50",
+      "#8E44AD",
+      "#F39C12"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "snake": {
+    "name": "Solid Snake",
+    "file": "snake.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#2C3E50",
+      "#5D6D7E",
+      "#95A5A6"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "arthur": {
+    "name": "Arthur Morgan",
+    "file": "arthur.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#8B4513",
+      "#D4A76A",
+      "#4A6741"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "aloy": {
+    "name": "Aloy",
+    "file": "aloy.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#E74C3C",
+      "#D4A76A",
+      "#2ECC71"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "lara": {
+    "name": "Lara Croft",
+    "file": "lara.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#5D4E37",
+      "#2ECC71",
+      "#95A5A6"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  },
+  "geralt": {
+    "name": "Geralt of Rivia",
+    "file": "geralt.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#7F8C8D",
+      "#C0392B",
+      "#2C3E50"
+    ],
+    "quality": "fair",
+    "tpose": false,
+    "grayBg": false,
+    "notes": "Content policy retry - upper body only, white bg"
+  },
+  "mario": {
+    "name": "Mario",
+    "file": "mario.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#E74C3C",
+      "#3498DB",
+      "#F1C40F"
+    ],
+    "quality": "good",
+    "tpose": false,
+    "grayBg": false,
+    "notes": "Content policy retry - standing pose, darker gray bg"
+  },
+  "joel": {
+    "name": "Joel Miller",
+    "file": "joel.png",
+    "dimensions": "1024x1536",
+    "palette": [
+      "#5D4E37",
+      "#2ECC71",
+      "#8B7355"
+    ],
+    "quality": "excellent",
+    "tpose": true,
+    "grayBg": true
+  }
+}
