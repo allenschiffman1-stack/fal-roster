@@ -10,7 +10,8 @@ import numpy as np
 from PIL import Image
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parents[2] / "assets" / "floor"
+ASSETS = Path(__file__).resolve().parents[2] / "assets"
+OUT = ASSETS / "floor"
 OUT.mkdir(parents=True, exist_ok=True)
 SIZE = 1024
 
@@ -83,12 +84,33 @@ def metalness_map(size, veins):
     Image.fromarray(arr, "L").save(OUT / "metalness.png", optimize=True)
 
 
+def marble_disk(size=1024):
+    """CSS-anchor marble used by index.html .floor-anchor::after.
+    Square PNG with the marble pattern masked into a soft-edged ellipse."""
+    base = fbm(size, seed=11)
+    veins = np.abs(fbm(size, seed=23) - 0.5) * 2.0
+    veins = np.clip((1.0 - veins - 0.85) * 7.0, 0, 1)
+    val = np.clip(base * 0.85 + veins * 0.45, 0, 1)
+    rgb = np.stack([val * 235 + 18, val * 232 + 20, val * 230 + 24], axis=-1).clip(0, 255).astype(np.uint8)
+    tile = Image.fromarray(rgb, "RGB").convert("RGBA")
+    # soft elliptical alpha mask
+    yy, xx = np.mgrid[0:size, 0:size]
+    cx = cy = (size - 1) / 2
+    d = np.sqrt(((xx - cx) / cx) ** 2 + ((yy - cy) / cy) ** 2)
+    alpha = np.clip(1.0 - (d - 0.78) / 0.22, 0, 1)
+    rgba = np.dstack([np.asarray(tile)[..., :3], (alpha * 255).astype(np.uint8)])
+    out = Image.fromarray(rgba, "RGBA")
+    out = out.quantize(colors=128, method=Image.Quantize.FASTOCTREE).convert("RGBA")
+    out.save(ASSETS / "floor-marble.png", optimize=True)
+
+
 def main():
     base, veins = basecolor(SIZE)
     normal_map(SIZE, base, veins)
     roughness_map(SIZE, base, veins)
     metalness_map(SIZE, veins)
-    print(f"Wrote 4 floor textures to {OUT}")
+    marble_disk(1024)
+    print(f"Wrote 4 floor textures to {OUT} + floor-marble.png to {ASSETS}")
 
 
 if __name__ == "__main__":
